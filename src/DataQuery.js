@@ -1,4 +1,5 @@
 import Realm from 'realm';
+import DataStruc from './DataStruc';
 
 let repository = new Realm({
     schema: [{
@@ -14,14 +15,14 @@ let repository = new Realm({
     }]
 });
 
-let TodoService = {
+let DataQuery = {
   findAll: function(sortBy) {
     if (!sortBy) sortBy = [['completed', false], ['updatedAt', true]];
     return repository.objects('Todo').sorted(sortBy);
   },
 
   save: function(todo) {
-    if (repository.objects('Todo').filtered("title = '" + todo.title + "'").length) return;
+    // if (repository.objects('Todo').filtered("title = '" + todo.title + "'").length) return;
 
     repository.write(() => {
       todo.updatedAt = new Date();
@@ -46,4 +47,6 @@ let TodoService = {
   }
 };
 
-module.exports = TodoService;
+DataQuery.save(new DataStruc('Hello Koding'));
+
+module.exports = DataQuery;

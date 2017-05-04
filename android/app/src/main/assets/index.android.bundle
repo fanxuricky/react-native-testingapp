@@ -1254,42 +1254,28 @@ var _nativeBase = require(47           ); // 47 = native-base
 var _reactNative = require(62            ); // 62 = react-native
 
 var whatTodo = function (_Component) {
-    babelHelpers.inherits(whatTodo, _Component);
+  babelHelpers.inherits(whatTodo, _Component);
 
-    function whatTodo() {
-        babelHelpers.classCallCheck(this, whatTodo);
-        return babelHelpers.possibleConstructorReturn(this, (whatTodo.__proto__ || Object.getPrototypeOf(whatTodo)).apply(this, arguments));
+  function whatTodo() {
+    babelHelpers.classCallCheck(this, whatTodo);
+    return babelHelpers.possibleConstructorReturn(this, (whatTodo.__proto__ || Object.getPrototypeOf(whatTodo)).apply(this, arguments));
+  }
+
+  babelHelpers.createClass(whatTodo, [{
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        _nativeBase.Container,
+        null,
+        _react2.default.createElement(_TaskList2.default, null)
+      );
     }
-
-    babelHelpers.createClass(whatTodo, [{
-        key: 'render',
-        value: function render() {
-            return _react2.default.createElement(
-                _nativeBase.Container,
-                null,
-                _react2.default.createElement(_TaskList2.default, null),
-                _react2.default.createElement(
-                    _nativeBase.Item,
-                    { rounded: true },
-                    _react2.default.createElement(_nativeBase.Input, { placeholder: 'Rounded Textbox' })
-                ),
-                _react2.default.createElement(
-                    _nativeBase.Button,
-                    { rounded: true },
-                    _react2.default.createElement(
-                        _nativeBase.Text,
-                        null,
-                        'Add'
-                    )
-                )
-            );
-        }
-    }]);
-    return whatTodo;
+  }]);
+  return whatTodo;
 }(_react.Component);
 
 _reactNative.AppRegistry.registerComponent('whatTodo', function () {
-    return whatTodo;
+  return whatTodo;
 });
 }, 0, null, "whatTodo/index.android.js");
 __d(/* react/react.js */function(global, require, module, exports) {'use strict';
