@@ -10,12 +10,20 @@ export default class TaskItem extends Component {
       }
     }
 
+    componentWillReceiveProps(props) {
+      this.setState({
+        data: props.data
+      })
+    }
+
     render() {
       let data = this.state.data;
-      <TouchableHighlight>
-        <View>
-          <Text>{data}</Text>
-        </View>
-      </TouchableHighlight>
+      return (
+        <TouchableHighlight>
+          <View>
+            <Text>{data}</Text>
+          </View>
+        </TouchableHighlight>
+      )
     }
 }

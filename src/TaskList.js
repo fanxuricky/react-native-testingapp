@@ -36,7 +36,7 @@ export default class TaskList extends Component {
               <InputBox/>
                   <ListView
                       dataSource={this.state.dataSource}
-                      renderRow={(items) =>  <Text>{items.title}</Text>}
+                      renderRow={(items) =>  <TaskItem data={items.title}/>}
                       renderSeparator={(sectionId, rowId) => <View key={rowId} style={styles.separator} />}
                     />
             </Container>
