@@ -14,7 +14,7 @@ export default class TaskItem extends Component {
       let data = this.state.data;
       <TouchableHighlight>
         <View>
-          <Text>{data.title}</Text>
+          <Text>{data}</Text>
         </View>
       </TouchableHighlight>
     }

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { View, StyleSheet } from 'react-native';
 import InputBox from './InputBox';
 import { Container, Content,  Text } from 'native-base';
 import { ListView } from 'realm/react-native';
@@ -6,25 +7,37 @@ import TaskItem from './TaskItem';
 import DataQuery from './DataQuery';
 
 let todoList = DataQuery.findAll();
-var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+
+const styles = StyleSheet.create({
+  separator: {
+    flex: 1,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: '#8E8E8E',
+  },
+});
 
 export default class TaskList extends Component {
     constructor(props) {
       super(props);
+      const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
       this.state = {
-        todoList: todoList ,
-        dataSource: ds.cloneWithRows([todoList]),
+        todoList: todoList,
+        dataSource : ds
       };
     }
 
+    componentWillMount() {
+            this.setState({ dataSource: this.state.dataSource.cloneWithRows(todoList) });
+    }
+
     render() {
-        var items = ['Simon Mignolet','Nathaniel Clyne','Dejan Lovren','Mama Sakho','Emre Can'];
         return (
             <Container>
               <InputBox/>
                   <ListView
                       dataSource={this.state.dataSource}
-                      renderRow={(item) =>  <Text>{item}</Text>}
+                      renderRow={(items) =>  <Text>{items.title}</Text>}
+                      renderSeparator={(sectionId, rowId) => <View key={rowId} style={styles.separator} />}
                     />
             </Container>
         );

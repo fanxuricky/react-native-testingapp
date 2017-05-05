@@ -22,7 +22,7 @@ let DataQuery = {
   },
 
   save: function(todo) {
-    // if (repository.objects('Todo').filtered("title = '" + todo.title + "'").length) return;
+    if (repository.objects('Todo').filtered("title = '" + todo.title + "'").length) return;
 
     repository.write(() => {
       todo.updatedAt = new Date();
@@ -46,7 +46,5 @@ let DataQuery = {
     })
   }
 };
-
-DataQuery.save(new DataStruc('Hello Koding'));
 
 module.exports = DataQuery;
