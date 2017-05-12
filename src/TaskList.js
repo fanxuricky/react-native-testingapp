@@ -26,6 +26,11 @@ export default class TaskList extends Component {
       };
     }
 
+    onCompletedChange = () => {
+      // if (this.forceUpdate) this.forceUpdate();
+      this.setState({ dataSource: this.state.dataSource.cloneWithRows(todoList) });
+    }
+
     componentWillMount() {
             this.setState({ dataSource: this.state.dataSource.cloneWithRows(todoList) });
     }
@@ -37,7 +42,7 @@ export default class TaskList extends Component {
                   <ListView
                       dataSource = {this.state.dataSource}
                       initialListSize = {200}
-                      renderRow={(items) =>  <TaskItem data={items}/>}
+                      renderRow={(items) =>  <TaskItem data={items} onCompletedChange={this.onCompletedChange}/>}
                     />
             </Container>
         );

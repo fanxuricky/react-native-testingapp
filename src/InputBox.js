@@ -1,15 +1,52 @@
 import React, { Component } from 'react';
 import { Container, Content, InputGroup, Input, Icon, Button, Text, Item } from 'native-base';
 import { View } from 'react-native';
+import DataQuery from './DataQuery';
+import DataStruc from './DataStruc';
 
 export default class InputBox extends Component {
+    constructor(props) {
+      super(props);
+    }
+
+    componentWillMount() {
+      this.setState({
+        newValue: ''
+      });
+    }
+
+    onChange = (event) => {
+      var title = event.nativeEvent.text;
+
+      this.setState({
+        newValue: title
+      });
+    }
+
+    onAddPressed = () => {
+        var newDataItem = new DataStruc(this.state.newValue);
+
+        var dataList = this.props.data;
+
+        dataList.unshift(newDataItem);
+        DataQuery.save(newDataItem);
+
+        this.setState({
+          newValue: ''
+        });
+        this.props.updateDataList(dataList);
+    }
+
     render() {
         return (
             <View style={{flexDirection: 'row'}}>
                     <Item rounded style={{flex: 1}}>
-                        <Input placeholder='Rounded Textbox'/>
+                        <Input placeholder='Rounded Textbox'
+                        value={this.state.newValue}
+                        onChange={this.onChange}/>
                     </Item>
-                    <Button rounded>
+                    <Button rounded
+                      onPress={this.onAddPressed}>
                         <Text>Add</Text>
                     </Button>
             </View>

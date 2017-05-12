@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TouchableHighlight, View, Text } from 'react-native';
+import { TouchableHighlight, View, Text, ToastAndroid, Alert } from 'react-native';
 import { Moment } from 'moment';
 import DataQuery from './DataQuery';
 
@@ -11,9 +11,9 @@ export default class TaskItem extends Component {
       }
     }
 
-    onCheckBoxPressed = () => {
+    onCompletePressed = () => {
       var data = this.state.data;
-      TodoService.update(data, () => {
+      DataQuery.update(data, () => {
         data.completed = !data.completed;
       });
       this.setState({
@@ -21,6 +21,22 @@ export default class TaskItem extends Component {
       });
 
       this.props.onCompletedChange();
+    }
+
+    onDeletePressed = () => {
+      var data = this.state.data;
+      // DataQuery.delete(data);
+      Alert.alert(
+          'Alert Title',
+          'alertMessage',
+          [
+            {text: 'Cancel'},
+            {text: 'OK', onPress:DataQuery.delete(data)},
+          ]
+      )
+
+      this.props.onCompletedChange();
+      ToastAndroid.show('Deleted', ToastAndroid.SHORT);
     }
 
     componentWillReceiveProps(props) {
@@ -31,15 +47,16 @@ export default class TaskItem extends Component {
 
     render() {
       let data = this.state.data;
-      let color = data.completed ? '#C5C8C9' : '#000';
+      let color = data.completed ? '#FD0000' : '#000';
       let textDecorationLine = data.completed ? 'line-through' : 'none';
       return (
         <TouchableHighlight
           underlayColor={'#eee'}
           style={{paddingTop: 10, paddingBottom: 10, backgroundColor: "#F8F8F8", borderBottomWidth:1, borderColor: '#eee'}}
-          onPress={this.onCheckBoxPressed}>
+          onPress={this.onCompletePressed}
+          onLongPress={this.onDeletePressed}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text>{data.title}</Text>
+            <Text style={{fontSize:18, color: color, textDecorationLine: textDecorationLine}}>{data.title}</Text>
           </View>
         </TouchableHighlight>
       )

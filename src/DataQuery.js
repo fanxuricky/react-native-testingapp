@@ -38,10 +38,8 @@ let DataQuery = {
     });
   },
 
-  delete: function(todo, callback) {
-    if (!callback) return;
+  delete: function(todo) {
     repository.write(()=> {
-      callback();
       repository.delete(todo);
     })
   }
