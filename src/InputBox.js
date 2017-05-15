@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Container, Content, InputGroup, Input, Icon, Button, Text, Item } from 'native-base';
-import { View, ToastAndroid } from 'react-native';
+import { View, ToastAndroid, Keyboard } from 'react-native';
 import DataQuery from './DataQuery';
 import DataStruc from './DataStruc';
 
@@ -31,6 +31,7 @@ export default class InputBox extends Component {
         // dataList.unshift(newDataItem);
         DataQuery.save(newDataItem);
 
+        Keyboard.dismiss;
         this.setState({
           newValue: ''
         });
