@@ -23,20 +23,23 @@ export default class TaskItem extends Component {
       this.props.onCompletedChange();
     }
 
+    deleteQuery = (data) => {
+      DataQuery.delete(data);
+      ToastAndroid.show('Deleted', ToastAndroid.SHORT);
+      this.props.onCompletedChange();
+    }
+
     onDeletePressed = () => {
       var data = this.state.data;
       // DataQuery.delete(data);
       Alert.alert(
-          'Alert Title',
-          'alertMessage',
+          'Delete Todo',
+          'Are you sure you want to delete '+ data.title +'?',
           [
             {text: 'Cancel'},
-            {text: 'OK', onPress:DataQuery.delete(data)},
+            {text: 'OK', onPress: () => this.deleteQuery(data)},
           ]
       )
-
-      this.props.onCompletedChange();
-      ToastAndroid.show('Deleted', ToastAndroid.SHORT);
     }
 
     componentWillReceiveProps(props) {

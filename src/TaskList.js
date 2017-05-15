@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ToolbarAndroid } from 'react-native';
 import InputBox from './InputBox';
 import { Container, Content,  Text } from 'native-base';
 import { ListView } from 'realm/react-native';
@@ -38,10 +38,14 @@ export default class TaskList extends Component {
     render() {
         return (
             <Container>
-              <InputBox/>
+              <ToolbarAndroid
+            actions={toolbarActions}
+            style={styles.toolbar}
+            subtitle="There be no icon here" />
+              <InputBox onCompletedChange={this.onCompletedChange}/>
                   <ListView
                       dataSource = {this.state.dataSource}
-                      initialListSize = {200}
+                      initialListSize = {100}
                       renderRow={(items) =>  <TaskItem data={items} onCompletedChange={this.onCompletedChange}/>}
                     />
             </Container>

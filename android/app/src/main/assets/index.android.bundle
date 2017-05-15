@@ -3982,13 +3982,13 @@ var _InputBox2 = babelHelpers.interopRequireDefault(_InputBox);
 
 var _nativeBase = require(418          ); // 418 = native-base
 
-var _reactNative2 = require(753                 ); // 753 = realm/react-native
+var _reactNative2 = require(775                 ); // 775 = realm/react-native
 
-var _TaskItem = require(755         ); // 755 = ./TaskItem
+var _TaskItem = require(777         ); // 777 = ./TaskItem
 
 var _TaskItem2 = babelHelpers.interopRequireDefault(_TaskItem);
 
-var _DataQuery = require(757          ); // 757 = ./DataQuery
+var _DataQuery = require(753          ); // 753 = ./DataQuery
 
 var _DataQuery2 = babelHelpers.interopRequireDefault(_DataQuery);
 
@@ -4010,6 +4010,10 @@ var TaskList = function (_Component) {
 
     var _this = babelHelpers.possibleConstructorReturn(this, (TaskList.__proto__ || Object.getPrototypeOf(TaskList)).call(this, props));
 
+    _this.onCompletedChange = function () {
+      _this.setState({ dataSource: _this.state.dataSource.cloneWithRows(todoList) });
+    };
+
     var ds = new _reactNative2.ListView.DataSource({ rowHasChanged: function rowHasChanged(r1, r2) {
         return r1 !== r2;
       } });
@@ -4028,14 +4032,17 @@ var TaskList = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
+      var _this2 = this;
+
       return _react2.default.createElement(
         _nativeBase.Container,
         null,
         _react2.default.createElement(_InputBox2.default, null),
         _react2.default.createElement(_reactNative2.ListView, {
           dataSource: this.state.dataSource,
+          initialListSize: 200,
           renderRow: function renderRow(items) {
-            return _react2.default.createElement(_TaskItem2.default, { data: items });
+            return _react2.default.createElement(_TaskItem2.default, { data: items, onCompletedChange: _this2.onCompletedChange });
           }
         })
       );
@@ -46609,7 +46616,7 @@ function throwOnWrongReactAPI(key) {
 module.exports = throwOnWrongReactAPI;
 }, 416, null, "throwOnWrongReactAPI");
 __d(/* whatTodo/src/InputBox.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _react = require(12     ); // 12 = react
@@ -46620,38 +46627,81 @@ var _nativeBase = require(418          ); // 418 = native-base
 
 var _reactNative = require(46            ); // 46 = react-native
 
+var _DataQuery = require(753          ); // 753 = ./DataQuery
+
+var _DataQuery2 = babelHelpers.interopRequireDefault(_DataQuery);
+
+var _DataStruc = require(774          ); // 774 = ./DataStruc
+
+var _DataStruc2 = babelHelpers.interopRequireDefault(_DataStruc);
+
 var InputBox = function (_Component) {
-    babelHelpers.inherits(InputBox, _Component);
+  babelHelpers.inherits(InputBox, _Component);
 
-    function InputBox() {
-        babelHelpers.classCallCheck(this, InputBox);
-        return babelHelpers.possibleConstructorReturn(this, (InputBox.__proto__ || Object.getPrototypeOf(InputBox)).apply(this, arguments));
+  function InputBox(props) {
+    babelHelpers.classCallCheck(this, InputBox);
+
+    var _this = babelHelpers.possibleConstructorReturn(this, (InputBox.__proto__ || Object.getPrototypeOf(InputBox)).call(this, props));
+
+    _this.onChange = function (event) {
+      var title = event.nativeEvent.text;
+
+      _this.setState({
+        newValue: title
+      });
+    };
+
+    _this.onAddPressed = function () {
+      var newDataItem = new _DataStruc2.default(_this.state.newValue);
+
+      var dataList = _this.props.data;
+
+      dataList.unshift(newDataItem);
+      _DataQuery2.default.save(newDataItem);
+
+      _this.setState({
+        newValue: ''
+      });
+      _this.props.updateDataList(dataList);
+    };
+
+    return _this;
+  }
+
+  babelHelpers.createClass(InputBox, [{
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      this.setState({
+        newValue: ''
+      });
     }
-
-    babelHelpers.createClass(InputBox, [{
-        key: 'render',
-        value: function render() {
-            return _react2.default.createElement(
-                _reactNative.View,
-                { style: { flexDirection: 'row' } },
-                _react2.default.createElement(
-                    _nativeBase.Item,
-                    { rounded: true, style: { flex: 1 } },
-                    _react2.default.createElement(_nativeBase.Input, { placeholder: 'Rounded Textbox' })
-                ),
-                _react2.default.createElement(
-                    _nativeBase.Button,
-                    { rounded: true },
-                    _react2.default.createElement(
-                        _nativeBase.Text,
-                        null,
-                        'Add'
-                    )
-                )
-            );
-        }
-    }]);
-    return InputBox;
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        _reactNative.View,
+        { style: { flexDirection: 'row' } },
+        _react2.default.createElement(
+          _nativeBase.Item,
+          { rounded: true, style: { flex: 1 } },
+          _react2.default.createElement(_nativeBase.Input, { placeholder: 'Rounded Textbox',
+            value: this.state.newValue,
+            onChange: this.onChange })
+        ),
+        _react2.default.createElement(
+          _nativeBase.Button,
+          { rounded: true,
+            onPress: this.onAddPressed },
+          _react2.default.createElement(
+            _nativeBase.Text,
+            null,
+            'Add'
+          )
+        )
+      );
+    }
+  }]);
+  return InputBox;
 }(_react.Component);
 
 exports.default = InputBox;
@@ -85768,6 +85818,1953 @@ Subtitle.propTypes = _extends({}, _reactNative.Text.propTypes, {
 
 var StyledSubtitle = (0, _nativeBaseShoutemTheme.connectStyle)('NativeBase.Subtitle', {}, _mapPropsToStyleNames2.default)(Subtitle);exports.Subtitle = StyledSubtitle;
 }, 752, null, "native-base/dist/src/backward/Widgets/Subtitle.js");
+__d(/* whatTodo/src/DataQuery.js */function(global, require, module, exports) {var _realm = require(754    ); // 754 = realm
+
+var _realm2 = babelHelpers.interopRequireDefault(_realm);
+
+var _DataStruc = require(774          ); // 774 = ./DataStruc
+
+var _DataStruc2 = babelHelpers.interopRequireDefault(_DataStruc);
+
+var repository = new _realm2.default({
+  schema: [{
+    name: 'Todo',
+    primaryKey: 'id',
+    properties: {
+      id: { type: 'string', indexed: true },
+      title: 'string',
+      completed: 'bool',
+      createdAt: 'date',
+      updatedAt: 'date'
+    }
+  }]
+});
+
+var DataQuery = {
+  findAll: function findAll(sortBy) {
+    if (!sortBy) sortBy = [['completed', false], ['updatedAt', true]];
+    return repository.objects('Todo').sorted(sortBy);
+  },
+
+  save: function save(todo) {
+    if (repository.objects('Todo').filtered("title = '" + todo.title + "'").length) return;
+
+    repository.write(function () {
+      todo.updatedAt = new Date();
+      repository.create('Todo', todo);
+    });
+  },
+
+  update: function update(todo, callback) {
+    if (!callback) return;
+    repository.write(function () {
+      callback();
+      todo.updatedAt = new Date();
+    });
+  },
+
+  delete: function _delete(todo) {
+    repository.write(function () {
+      repository.delete(todo);
+    });
+  }
+};
+
+module.exports = DataQuery;
+}, 753, null, "whatTodo/src/DataQuery.js");
+__d(/* realm/lib/index.js */function(global, require, module, exports) {
+
+'use strict';
+
+function nodeRequire(module) {
+    return require(module);
+}
+
+function getContext() {
+    if (typeof process === 'object' && process + '' === '[object process]') {
+        return process.type === 'renderer' ? 'electron' : 'nodejs';
+    }
+
+    if (typeof jest === 'object') {
+        return 'nodejs';
+    }
+
+    if (typeof Realm !== 'undefined') {
+        if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
+            return 'reactnative';
+        }
+
+        return 'jscore';
+    }
+
+    if (typeof global !== 'undefined' && global.__debug__) {
+        return 'vscodedebugger';
+    }
+
+    if (typeof navigator !== 'undefined' && /Chrome/.test(navigator.userAgent)) {
+        return 'chromedebugger';
+    }
+
+    throw Error("Unknown execution context");
+}
+
+var realmConstructor;
+
+switch (getContext()) {
+    case 'nodejs':
+    case 'electron':
+        nodeRequire('./submit-analytics')('Run');
+
+        var binary = nodeRequire('node-pre-gyp');
+        var path = nodeRequire('path');
+        var pkg = path.resolve(path.join(__dirname, '../package.json'));
+        var binding_path = binary.find(pkg);
+
+        realmConstructor = require(binding_path).Realm;
+        break;
+
+    case 'reactnative':
+    case 'jscore':
+        realmConstructor = Realm;
+        break;
+
+    case 'chromedebugger':
+    case 'vscodedebugger':
+        realmConstructor = require(755        ).default; // 755 = ./browser
+        break;
+}
+
+if (!realmConstructor) {
+    throw new Error('Missing Realm constructor. Did you run "react-native link realm"? Please see https://realm.io/docs/react-native/latest/#missing-realm-constructor for troubleshooting');
+}
+
+require(772           )(realmConstructor); // 772 = ./extensions
+
+module.exports = realmConstructor;
+}, 754, null, "realm/lib/index.js");
+__d(/* realm/lib/browser/index.js */function(global, require, module, exports) {
+
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _reactNative = require(46            ); // 46 = react-native
+
+var _constants = require(756          ); // 756 = ./constants
+
+var _collections = require(757            ); // 757 = ./collections
+
+var collections = babelHelpers.interopRequireWildcard(_collections);
+
+var _lists = require(761      ); // 761 = ./lists
+
+var _lists2 = babelHelpers.interopRequireDefault(_lists);
+
+var _results = require(762        ); // 762 = ./results
+
+var _results2 = babelHelpers.interopRequireDefault(_results);
+
+var _objects = require(763        ); // 763 = ./objects
+
+var objects = babelHelpers.interopRequireWildcard(_objects);
+
+var _user = require(764     ); // 764 = ./user
+
+var _user2 = babelHelpers.interopRequireDefault(_user);
+
+var _session = require(765        ); // 765 = ./session
+
+var _session2 = babelHelpers.interopRequireDefault(_session);
+
+var _rpc = require(759    ); // 759 = ./rpc
+
+var rpc = babelHelpers.interopRequireWildcard(_rpc);
+
+var _util = require(758     ); // 758 = ./util
+
+var util = babelHelpers.interopRequireWildcard(_util);
+
+var _userMethods = require(766              ); // 766 = ../user-methods
+
+var _NativeModules$Realm = _reactNative.NativeModules.Realm,
+    debugHosts = _NativeModules$Realm.debugHosts,
+    debugPort = _NativeModules$Realm.debugPort;
+
+
+rpc.registerTypeConverter(_constants.objectTypes.LIST, _lists.createList);
+rpc.registerTypeConverter(_constants.objectTypes.RESULTS, _results.createResults);
+rpc.registerTypeConverter(_constants.objectTypes.OBJECT, objects.createObject);
+rpc.registerTypeConverter(_constants.objectTypes.REALM, createRealm);
+rpc.registerTypeConverter(_constants.objectTypes.USER, _user.createUser);
+rpc.registerTypeConverter(_constants.objectTypes.SESSION, _session.createSession);
+
+function createRealm(_, info) {
+    var realm = Object.create(Realm.prototype);
+
+    setupRealm(realm, info.id);
+    return realm;
+}
+
+function setupRealm(realm, realmId) {
+    realm[_constants.keys.id] = realmId;
+    realm[_constants.keys.realm] = realmId;
+    realm[_constants.keys.type] = _constants.objectTypes.REALM;
+
+    ['path', 'readOnly', 'schema', 'schemaVersion', 'syncSession'].forEach(function (name) {
+        Object.defineProperty(realm, name, { get: util.getterForProperty(name) });
+    });
+}
+
+function getObjectType(realm, type) {
+    if (typeof type == 'function') {
+        return objects.typeForConstructor(realm[_constants.keys.realm], type);
+    }
+    return type;
+}
+
+var Realm = function () {
+    function Realm(config) {
+        babelHelpers.classCallCheck(this, Realm);
+
+        var schemas = typeof config == 'object' && config.schema;
+        var constructors = schemas ? {} : null;
+
+        for (var i = 0, len = schemas ? schemas.length : 0; i < len; i++) {
+            var item = schemas[i];
+
+            if (typeof item == 'function') {
+                var schema = item.schema;
+                if (!schema || typeof schema != 'object') {
+                    throw new Error("Realm object constructor must have 'schema' property");
+                }
+
+                var name = schema.name,
+                    properties = schema.properties;
+
+                if (!name || typeof name != 'string') {
+                    throw new Error("Realm object schema must have 'name' property");
+                } else if (!properties || typeof properties != 'object') {
+                    throw new Error("Realm object schema must have 'properties' property");
+                }
+
+                schemas.splice(i, 1, schema);
+                constructors[name] = item;
+            }
+        }
+
+        var realmId = rpc.createRealm(Array.from(arguments));
+        setupRealm(this, realmId);
+
+        objects.registerConstructors(realmId, this.path, constructors);
+    }
+
+    babelHelpers.createClass(Realm, [{
+        key: 'create',
+        value: function create(type) {
+            var method = util.createMethod(_constants.objectTypes.REALM, 'create', true);
+
+            for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+                args[_key - 1] = arguments[_key];
+            }
+
+            return method.apply(this, [getObjectType(this, type)].concat(args));
+        }
+    }, {
+        key: 'objects',
+        value: function objects(type) {
+            var method = util.createMethod(_constants.objectTypes.REALM, 'objects');
+
+            for (var _len2 = arguments.length, args = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+                args[_key2 - 1] = arguments[_key2];
+            }
+
+            return method.apply(this, [getObjectType(this, type)].concat(args));
+        }
+    }, {
+        key: 'objectForPrimaryKey',
+        value: function objectForPrimaryKey(type) {
+            var method = util.createMethod(_constants.objectTypes.REALM, 'objectForPrimaryKey');
+
+            for (var _len3 = arguments.length, args = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
+                args[_key3 - 1] = arguments[_key3];
+            }
+
+            return method.apply(this, [getObjectType(this, type)].concat(args));
+        }
+    }]);
+    return Realm;
+}();
+
+exports.default = Realm;
+
+util.createMethods(Realm.prototype, _constants.objectTypes.REALM, ['addListener', 'removeListener', 'removeAllListeners', 'close']);
+
+util.createMethods(Realm.prototype, _constants.objectTypes.REALM, ['delete', 'deleteAll', 'write'], true);
+
+var Sync = {
+    User: _user2.default,
+    Session: _session2.default
+};
+
+Object.defineProperties(Realm, {
+    Collection: {
+        value: collections.default
+    },
+    List: {
+        value: _lists2.default
+    },
+    Results: {
+        value: _results2.default
+    },
+    Object: {
+        value: objects.default
+    },
+    Sync: {
+        value: Sync
+    },
+    defaultPath: {
+        get: util.getterForProperty('defaultPath'),
+        set: util.setterForProperty('defaultPath')
+    },
+    schemaVersion: {
+        value: function value(_path, _encryptionKey) {
+            return rpc.callMethod(undefined, Realm[_constants.keys.id], 'schemaVersion', Array.from(arguments));
+        }
+    },
+    copyBundledRealmFiles: {
+        value: function value() {
+            return rpc.callMethod(undefined, Realm[_constants.keys.id], 'copyBundledRealmFiles', []);
+        }
+    },
+    clearTestState: {
+        value: function value() {
+            collections.clearMutationListeners();
+            objects.clearRegisteredConstructors();
+            rpc.clearTestState();
+        }
+    }
+});
+
+for (var i = 0, len = debugHosts.length; i < len; i++) {
+    try {
+        var refreshAccessTokenCallback = _userMethods.static._refreshAccessToken.bind(_user2.default);
+
+        Realm[_constants.keys.id] = rpc.createSession(refreshAccessTokenCallback, debugHosts[i] + ':' + debugPort);
+        break;
+    } catch (e) {
+        if (i < len - 1) {
+            continue;
+        }
+
+        console.error(e);
+
+        throw new Error('Realm failed to connect to the embedded debug server inside the app. ' + 'If attempting to use Chrome debugging from a device, ensure the device is ' + 'reachable on the same network as this machine.');
+    }
+}
+}, 755, null, "realm/lib/browser/index.js");
+__d(/* realm/lib/browser/constants.js */function(global, require, module, exports) {
+
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var keys = exports.keys = {};
+var objectTypes = exports.objectTypes = {};
+var propTypes = exports.propTypes = {};
+
+['id', 'realm', 'type'].forEach(function (name) {
+    keys[name] = Symbol(name);
+});
+
+['DATA', 'DATE', 'DICT', 'FUNCTION', 'LIST', 'OBJECT', 'REALM', 'RESULTS', 'USER', 'SESSION', 'UNDEFINED'].forEach(function (type) {
+    Object.defineProperty(objectTypes, type, {
+        value: type.toLowerCase()
+    });
+});
+
+['BOOL', 'INT', 'FLOAT', 'DOUBLE', 'STRING', 'DATE', 'DATA', 'OBJECT', 'LIST'].forEach(function (type) {
+    Object.defineProperty(propTypes, type, {
+        value: type.toLowerCase(),
+        enumerable: true
+    });
+});
+}, 756, null, "realm/lib/browser/constants.js");
+__d(/* realm/lib/browser/collections.js */function(global, require, module, exports) {
+
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.addMutationListener = addMutationListener;
+exports.removeMutationListener = removeMutationListener;
+exports.clearMutationListeners = clearMutationListeners;
+exports.fireMutationListeners = fireMutationListeners;
+exports.createCollection = createCollection;
+
+var _constants = require(756          ); // 756 = ./constants
+
+var _util = require(758     ); // 758 = ./util
+
+var _rpc = require(759    ); // 759 = ./rpc
+
+var mutationListeners = {};
+
+var Collection = function Collection() {
+    babelHelpers.classCallCheck(this, Collection);
+
+    throw new TypeError('Illegal constructor');
+};
+
+exports.default = Collection;
+function addMutationListener(realmId, callback) {
+    var listeners = mutationListeners[realmId] || (mutationListeners[realmId] = new Set());
+    listeners.add(callback);
+}
+
+function removeMutationListener(realmId, callback) {
+    var listeners = mutationListeners[realmId];
+    if (listeners) {
+        listeners.delete(callback);
+    }
+}
+
+function clearMutationListeners() {
+    mutationListeners = {};
+}
+
+function fireMutationListeners(realmId) {
+    var listeners = mutationListeners[realmId];
+    if (listeners) {
+        listeners.forEach(function (cb) {
+            return cb();
+        });
+    }
+}
+
+function isIndex(propertyName) {
+    return typeof propertyName === 'number' || typeof propertyName === 'string' && /^\d+$/.test(propertyName);
+}
+
+var mutable = Symbol('mutable');
+
+var traps = {
+    get: function get(collection, property, receiver) {
+        if (isIndex(property)) {
+            return (0, _rpc.getProperty)(collection[_constants.keys.realm], collection[_constants.keys.id], property);
+        }
+
+        return Reflect.get(collection, property, collection);
+    },
+    set: function set(collection, property, value, receiver) {
+        if (isIndex(property)) {
+            if (!collection[mutable]) {
+                return false;
+            }
+
+            (0, _rpc.setProperty)(collection[_constants.keys.realm], collection[_constants.keys.id], property, value);
+
+            if (value && typeof value == 'object') {
+                fireMutationListeners(collection[_constants.keys.realm]);
+            }
+
+            return true;
+        }
+
+        return Reflect.set(collection, property, value, collection);
+    },
+    ownKeys: function ownKeys(collection) {
+        return Reflect.ownKeys(collection).concat(Array.from({ length: collection.length }, function (value, key) {
+            return String(key);
+        }));
+    },
+    getOwnPropertyDescriptor: function getOwnPropertyDescriptor(collection, property) {
+        var _this = this;
+
+        if (isIndex(property)) {
+            var descriptor = {
+                enumerable: true,
+                configurable: true,
+                writable: collection[mutable]
+            };
+            Reflect.defineProperty(descriptor, "value", { get: function get() {
+                    return _this.get(collection, property);
+                } });
+            return descriptor;
+        }
+
+        return Reflect.getOwnPropertyDescriptor(collection, property);
+    },
+    has: function has(collection, property) {
+        if (isIndex(property)) {
+            return true;
+        }
+
+        return Reflect.has(collection, property);
+    }
+};
+
+function createCollection(prototype, realmId, info, _mutable) {
+    var collection = Object.create(prototype);
+
+    Object.defineProperties(collection, {
+        'length': {
+            get: (0, _util.getterForProperty)('length')
+        },
+        '-1': {
+            value: undefined
+        }
+    });
+
+    collection[_constants.keys.realm] = realmId;
+    collection[_constants.keys.id] = info.id;
+    collection[_constants.keys.type] = info.type;
+    collection[mutable] = _mutable;
+
+    return new Proxy(collection, traps);
+}
+}, 757, null, "realm/lib/browser/collections.js");
+__d(/* realm/lib/browser/util.js */function(global, require, module, exports) {
+
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.createMethods = createMethods;
+exports.createMethod = createMethod;
+exports.getterForProperty = getterForProperty;
+exports.setterForProperty = setterForProperty;
+
+var _collections = require(757            ); // 757 = ./collections
+
+var _constants = require(756          ); // 756 = ./constants
+
+var _rpc = require(759    ); // 759 = ./rpc
+
+var rpc = babelHelpers.interopRequireWildcard(_rpc);
+function createMethods(prototype, type, methodNames, mutates) {
+    var props = {};
+
+    methodNames.forEach(function (name) {
+        props[name] = {
+            value: createMethod(type, name, mutates)
+        };
+    });
+
+    Object.defineProperties(prototype, props);
+}
+
+function createMethod(type, name, mutates) {
+    return function () {
+        var realmId = this[_constants.keys.realm];
+        var id = this[_constants.keys.id];
+
+        if (!realmId || !id) {
+            throw new TypeError(name + ' method was not called a Realm object!');
+        }
+        if (this[_constants.keys.type] !== type) {
+            throw new TypeError(name + ' method was called on an object of the wrong type!');
+        }
+
+        try {
+            return rpc.callMethod(realmId, id, name, Array.from(arguments));
+        } finally {
+            if (mutates) {
+                (0, _collections.fireMutationListeners)(realmId);
+            }
+        }
+    };
+}
+
+function getterForProperty(name) {
+    return function () {
+        return rpc.getProperty(this[_constants.keys.realm], this[_constants.keys.id], name);
+    };
+}
+
+function setterForProperty(name) {
+    return function (value) {
+        var realmId = this[_constants.keys.realm];
+
+        rpc.setProperty(realmId, this[_constants.keys.id], name, value);
+
+        if (value && typeof value == 'object') {
+            (0, _collections.fireMutationListeners)(realmId);
+        }
+    };
+}
+}, 758, null, "realm/lib/browser/util.js");
+__d(/* realm/lib/browser/rpc.js */function(global, require, module, exports) {
+
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.registerTypeConverter = registerTypeConverter;
+exports.createSession = createSession;
+exports.createRealm = createRealm;
+exports.createUser = createUser;
+exports.callMethod = callMethod;
+exports.getProperty = getProperty;
+exports.setProperty = setProperty;
+exports.getAllUsers = getAllUsers;
+exports.clearTestState = clearTestState;
+exports.deserialize = deserialize;
+
+var _base = require(760       ); // 760 = ./base64
+
+var base64 = babelHelpers.interopRequireWildcard(_base);
+
+var _constants = require(756          ); // 756 = ./constants
+
+var idKey = _constants.keys.id,
+    _realmKey = _constants.keys.realm;
+
+var registeredCallbacks = [];
+var typeConverters = {};
+
+var persistentCallback = Symbol("persistentCallback");
+
+var XMLHttpRequest = global.originalXMLHttpRequest || global.XMLHttpRequest;
+var sessionHost = void 0;
+var sessionId = void 0;
+
+if (XMLHttpRequest.__proto__ != global.XMLHttpRequestEventTarget) {
+    var fakeXMLHttpRequest = XMLHttpRequest;
+    delete global.XMLHttpRequest;
+    XMLHttpRequest = global.XMLHttpRequest;
+    global.XMLHttpRequest = fakeXMLHttpRequest;
+}
+
+registerTypeConverter(_constants.objectTypes.DATA, function (_, _ref) {
+    var value = _ref.value;
+    return base64.decode(value);
+});
+registerTypeConverter(_constants.objectTypes.DATE, function (_, _ref2) {
+    var value = _ref2.value;
+    return new Date(value);
+});
+registerTypeConverter(_constants.objectTypes.DICT, deserializeDict);
+registerTypeConverter(_constants.objectTypes.FUNCTION, deserializeFunction);
+
+function registerTypeConverter(type, handler) {
+    typeConverters[type] = handler;
+}
+
+function createSession(refreshAccessToken, host) {
+    refreshAccessToken[persistentCallback] = true;
+    sessionId = sendRequest('create_session', { refreshAccessToken: serialize(undefined, refreshAccessToken) }, host);
+    sessionHost = host;
+
+    return sessionId;
+}
+
+function createRealm(args) {
+    if (args) {
+        args = args.map(function (arg) {
+            return serialize(null, arg);
+        });
+    }
+
+    return sendRequest('create_realm', { arguments: args });
+}
+
+function createUser(args) {
+    args = args.map(function (arg) {
+        return serialize(null, arg);
+    });
+    var result = sendRequest('create_user', { arguments: args });
+    return deserialize(undefined, result);
+}
+
+function callMethod(realmId, id, name, args) {
+    if (args) {
+        args = args.map(function (arg) {
+            return serialize(realmId, arg);
+        });
+    }
+
+    var result = sendRequest('call_method', { realmId: realmId, id: id, name: name, arguments: args });
+    return deserialize(realmId, result);
+}
+
+function getProperty(realmId, id, name) {
+    var result = sendRequest('get_property', { realmId: realmId, id: id, name: name });
+    return deserialize(realmId, result);
+}
+
+function setProperty(realmId, id, name, value) {
+    value = serialize(realmId, value);
+    sendRequest('set_property', { realmId: realmId, id: id, name: name, value: value });
+}
+
+function getAllUsers() {
+    var result = sendRequest('get_all_users');
+    return deserialize(undefined, result);
+}
+
+function clearTestState() {
+    sendRequest('clear_test_state');
+
+    registeredCallbacks = registeredCallbacks.filter(function (cb) {
+        return Reflect.has(cb, persistentCallback);
+    });
+}
+
+function registerCallback(callback) {
+    var key = registeredCallbacks.indexOf(callback);
+    return key >= 0 ? key : registeredCallbacks.push(callback) - 1;
+}
+
+function serialize(realmId, value) {
+    if (typeof value == 'undefined') {
+        return { type: _constants.objectTypes.UNDEFINED };
+    }
+    if (typeof value == 'function') {
+        return { type: _constants.objectTypes.FUNCTION, value: registerCallback(value) };
+    }
+    if (!value || typeof value != 'object') {
+        return { value: value };
+    }
+
+    var id = value[idKey];
+    if (id) {
+        return { id: id };
+    }
+
+    if (value instanceof Date) {
+        return { type: _constants.objectTypes.DATE, value: value.getTime() };
+    }
+
+    if (Array.isArray(value)) {
+        var array = value.map(function (item) {
+            return serialize(realmId, item);
+        });
+        return { value: array };
+    }
+
+    if (value instanceof ArrayBuffer || ArrayBuffer.isView(value)) {
+        return { type: _constants.objectTypes.DATA, value: base64.encode(value) };
+    }
+
+    var keys = Object.keys(value);
+    var values = keys.map(function (key) {
+        return serialize(realmId, value[key]);
+    });
+    return { type: _constants.objectTypes.DICT, keys: keys, values: values };
+}
+
+function deserialize(realmId, info) {
+    var type = info.type;
+    var handler = type && typeConverters[type];
+    if (handler) {
+        return handler(realmId, info);
+    }
+
+    var value = info.value;
+    if (value && Array.isArray(value)) {
+        return value.map(function (item) {
+            return deserialize(realmId, item);
+        });
+    }
+
+    return value;
+}
+
+function deserializeDict(realmId, info) {
+    var keys = info.keys,
+        values = info.values;
+
+    var object = {};
+
+    for (var i = 0, len = keys.length; i < len; i++) {
+        object[keys[i]] = deserialize(realmId, values[i]);
+    }
+
+    return object;
+}
+
+function deserializeFunction(realmId, info) {
+    return registeredCallbacks[info.value];
+}
+
+function makeRequest(url, data) {
+    var statusCode = void 0;
+    var responseText = void 0;
+
+    if (global.__debug__) {
+        var request = global.__debug__.require('sync-request');
+        var response = request('POST', url, {
+            body: JSON.stringify(data),
+            headers: {
+                "Content-Type": "text/plain;charset=UTF-8"
+            }
+        });
+
+        statusCode = response.statusCode;
+        responseText = response.body.toString('utf-8');
+    } else {
+        var body = JSON.stringify(data);
+        var _request = new XMLHttpRequest();
+
+        _request.open('POST', url, false);
+        _request.send(body);
+
+        statusCode = _request.status;
+        responseText = _request.responseText;
+    }
+
+    if (statusCode != 200) {
+        throw new Error(responseText);
+    }
+
+    return JSON.parse(responseText);
+}
+
+function sendRequest(command, data) {
+    var host = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : sessionHost;
+
+    if (!host) {
+        throw new Error('Must first create RPC session with a valid host');
+    }
+
+    data = babelHelpers.extends({}, data, sessionId ? { sessionId: sessionId } : null);
+
+    var url = 'http://' + host + '/' + command;
+    var response = makeRequest(url, data);
+
+    if (!response || response.error) {
+        var error = response && response.error;
+
+        if (error) {
+            error = error.replace(/^[a-z]+: /i, '');
+        }
+
+        throw new Error(error || 'Invalid response for "' + command + '"');
+    }
+
+    var callback = response.callback;
+    if (callback != null) {
+        var result = void 0;
+        var _error = void 0;
+        try {
+            var realmId = data.realmId;
+            var thisObject = deserialize(realmId, response.this);
+            var args = deserialize(realmId, response.arguments);
+            result = registeredCallbacks[callback].apply(thisObject, args);
+            result = serialize(realmId, result);
+        } catch (e) {
+            _error = e.message || '' + e;
+        }
+        return sendRequest('callback_result', { callback: callback, result: result, error: _error });
+    }
+
+    return response.result;
+}
+}, 759, null, "realm/lib/browser/rpc.js");
+__d(/* realm/lib/browser/base64.js */function(global, require, module, exports) {
+
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.decode = decode;
+exports.encode = encode;
+var CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+var CHAR_MAP = {};
+
+Array.from(CHARS, function (char, i) {
+    return CHAR_MAP[char] = i;
+});
+
+function decode(base64) {
+    var length = base64.length;
+    var byteCount = length * 0.75;
+
+    if (base64[length - 1] === '=') {
+        byteCount--;
+        if (base64[length - 2] === '=') {
+            byteCount--;
+        }
+    }
+
+    var buffer = new ArrayBuffer(byteCount);
+    var bytes = new Uint8Array(buffer);
+
+    for (var i = 0, j = 0; i < length; i += 4) {
+        var index1 = CHAR_MAP[base64[i]];
+        var index2 = CHAR_MAP[base64[i + 1]];
+        var index3 = CHAR_MAP[base64[i + 2]];
+        var index4 = CHAR_MAP[base64[i + 3]];
+
+        bytes[j++] = (index1 << 2) + ((index2 & 0x30) >> 4);
+        bytes[j++] = ((index2 & 0x0f) << 4) + ((index3 & 0x3c) >> 2);
+        bytes[j++] = ((index3 & 0x03) << 6) + index4;
+    }
+
+    return buffer;
+}
+
+function encode(data) {
+    var byteOffset = 0;
+    var buffer;
+
+    if (data instanceof ArrayBuffer) {
+        buffer = data;
+    } else if (ArrayBuffer.isView(data)) {
+        buffer = data.buffer;
+        byteOffset = data.byteOffset;
+    } else {
+        throw new TypeError('Can only base64 encode ArrayBuffer and ArrayBufferView objects');
+    }
+
+    var byteCount = data.byteLength;
+    var bytes = new Uint8Array(buffer, byteOffset, byteCount);
+    var base64 = '';
+
+    for (var i = 0; i < byteCount; i += 3) {
+        base64 += CHARS[(bytes[i] & 0xfc) >> 2];
+        base64 += CHARS[((bytes[i] & 0x03) << 4) + ((bytes[i + 1] & 0xf0) >> 4)];
+        base64 += CHARS[((bytes[i + 1] & 0x0f) << 2) + ((bytes[i + 2] & 0xc0) >> 6)];
+        base64 += CHARS[bytes[i + 2] & 0x3f];
+    }
+
+    switch (byteCount % 3) {
+        case 1:
+            return base64.slice(0, -2) + '==';
+        case 2:
+            return base64.slice(0, -1) + '=';
+        default:
+            return base64;
+    }
+}
+}, 760, null, "realm/lib/browser/base64.js");
+__d(/* realm/lib/browser/lists.js */function(global, require, module, exports) {
+
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.createList = createList;
+
+var _collections = require(757            ); // 757 = ./collections
+
+var _collections2 = babelHelpers.interopRequireDefault(_collections);
+
+var _constants = require(756          ); // 756 = ./constants
+
+var _util = require(758     ); // 758 = ./util
+
+var List = function (_Collection) {
+    babelHelpers.inherits(List, _Collection);
+
+    function List() {
+        babelHelpers.classCallCheck(this, List);
+        return babelHelpers.possibleConstructorReturn(this, (List.__proto__ || Object.getPrototypeOf(List)).apply(this, arguments));
+    }
+
+    return List;
+}(_collections2.default);
+
+exports.default = List;
+
+(0, _util.createMethods)(List.prototype, _constants.objectTypes.LIST, ['filtered', 'sorted', 'snapshot', 'isValid', 'addListener', 'removeListener', 'removeAllListeners']);
+
+(0, _util.createMethods)(List.prototype, _constants.objectTypes.LIST, ['pop', 'shift', 'push', 'unshift', 'splice'], true);
+
+function createList(realmId, info) {
+    return (0, _collections.createCollection)(List.prototype, realmId, info, true);
+}
+}, 761, null, "realm/lib/browser/lists.js");
+__d(/* realm/lib/browser/results.js */function(global, require, module, exports) {
+
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.createResults = createResults;
+
+var _collections = require(757            ); // 757 = ./collections
+
+var _collections2 = babelHelpers.interopRequireDefault(_collections);
+
+var _constants = require(756          ); // 756 = ./constants
+
+var _util = require(758     ); // 758 = ./util
+
+var Results = function (_Collection) {
+    babelHelpers.inherits(Results, _Collection);
+
+    function Results() {
+        babelHelpers.classCallCheck(this, Results);
+        return babelHelpers.possibleConstructorReturn(this, (Results.__proto__ || Object.getPrototypeOf(Results)).apply(this, arguments));
+    }
+
+    return Results;
+}(_collections2.default);
+
+exports.default = Results;
+
+
+(0, _util.createMethods)(Results.prototype, _constants.objectTypes.RESULTS, ['filtered', 'sorted', 'snapshot', 'isValid', 'addListener', 'removeListener', 'removeAllListeners']);
+
+function createResults(realmId, info) {
+    return (0, _collections.createCollection)(Results.prototype, realmId, info);
+}
+}, 762, null, "realm/lib/browser/results.js");
+__d(/* realm/lib/browser/objects.js */function(global, require, module, exports) {
+
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.clearRegisteredConstructors = clearRegisteredConstructors;
+exports.createObject = createObject;
+exports.registerConstructors = registerConstructors;
+exports.typeForConstructor = typeForConstructor;
+
+var _constants = require(756          ); // 756 = ./constants
+
+var _util = require(758     ); // 758 = ./util
+
+var registeredConstructors = {};
+var registeredRealmPaths = {};
+
+var RealmObject = function RealmObject() {
+    babelHelpers.classCallCheck(this, RealmObject);
+};
+
+exports.default = RealmObject;
+
+(0, _util.createMethods)(RealmObject.prototype, _constants.objectTypes.OBJECT, ['isValid']);
+
+function clearRegisteredConstructors() {
+    registeredConstructors = {};
+    registeredRealmPaths = {};
+}
+
+function createObject(realmId, info) {
+    var schema = info.schema;
+    var realmPath = registeredRealmPaths[realmId];
+    var constructor = (registeredConstructors[realmPath] || {})[schema.name];
+    var object = Object.create(constructor ? constructor.prototype : RealmObject.prototype);
+
+    object[_constants.keys.realm] = realmId;
+    object[_constants.keys.id] = info.id;
+    object[_constants.keys.type] = info.type;
+
+    schema.properties.forEach(function (name) {
+        Object.defineProperty(object, name, {
+            enumerable: true,
+            get: (0, _util.getterForProperty)(name),
+            set: (0, _util.setterForProperty)(name)
+        });
+    });
+
+    if (constructor) {
+        var result = constructor.call(object);
+        if (result != null && result != object) {
+            throw new Error('Realm object constructor must not return another value');
+        }
+    }
+
+    return object;
+}
+
+function registerConstructors(realmId, realmPath, constructors) {
+    registeredRealmPaths[realmId] = realmPath;
+
+    if (constructors) {
+        registeredConstructors[realmPath] = constructors;
+    }
+}
+
+function typeForConstructor(realmId, constructor) {
+    var realmPath = registeredRealmPaths[realmId];
+    var constructors = registeredConstructors[realmPath];
+
+    for (var name in constructors) {
+        if (constructors[name] == constructor) {
+            return name;
+        }
+    }
+
+    return null;
+}
+}, 763, null, "realm/lib/browser/objects.js");
+__d(/* realm/lib/browser/user.js */function(global, require, module, exports) {
+
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.createUser = createUser;
+
+var _rpc = require(759    ); // 759 = ./rpc
+
+var _constants = require(756          ); // 756 = ./constants
+
+var _util = require(758     ); // 758 = ./util
+
+var User = function () {
+    function User() {
+        babelHelpers.classCallCheck(this, User);
+    }
+
+    babelHelpers.createClass(User, null, [{
+        key: 'createUser',
+        value: function createUser(server, identity, token, isAdmin) {
+            return (0, _rpc.createUser)(Array.from(arguments));
+        }
+    }, {
+        key: 'all',
+        get: function get() {
+            return (0, _rpc.getAllUsers)();
+        }
+    }]);
+    return User;
+}();
+
+exports.default = User;
+
+
+(0, _util.createMethods)(User.prototype, _constants.objectTypes.USER, ['logout', '_sessionForOnDiskPath']);
+
+function createUser(realmId, info) {
+    var userProxy = Object.create(User.prototype);
+
+    userProxy[_constants.keys.realm] = "(User object)";
+
+    userProxy[_constants.keys.id] = info.id;
+    userProxy[_constants.keys.type] = _constants.objectTypes.USER;
+    babelHelpers.extends(userProxy, info.data);
+
+    return userProxy;
+}
+}, 764, null, "realm/lib/browser/user.js");
+__d(/* realm/lib/browser/session.js */function(global, require, module, exports) {
+
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.createSession = createSession;
+
+var _constants = require(756          ); // 756 = ./constants
+
+var _util = require(758     ); // 758 = ./util
+
+var _rpc = require(759    ); // 759 = ./rpc
+
+var Session = function Session() {
+    babelHelpers.classCallCheck(this, Session);
+};
+
+exports.default = Session;
+
+
+Object.defineProperties(Session.prototype, {
+    url: { get: (0, _util.getterForProperty)('url') },
+    state: { get: (0, _util.getterForProperty)('state') }
+});
+
+(0, _util.createMethods)(Session.prototype, _constants.objectTypes.SESSION, ['_refreshAccessToken', '_simulateError']);
+
+function createSession(realmId, info) {
+    var sessionProxy = Object.create(Session.prototype);
+
+    sessionProxy[_constants.keys.realm] = "(Session object)";
+
+    sessionProxy[_constants.keys.id] = info.id;
+    sessionProxy[_constants.keys.type] = _constants.objectTypes.SESSION;
+    sessionProxy.user = (0, _rpc.deserialize)(realmId, info.data.user);
+    sessionProxy.config = (0, _rpc.deserialize)(realmId, info.data.config);
+
+    return sessionProxy;
+}
+}, 765, null, "realm/lib/browser/session.js");
+__d(/* realm/lib/user-methods.js */function(global, require, module, exports) {
+
+'use strict';
+
+var AuthError = require(767       ).AuthError; // 767 = ./errors
+
+function node_require(module) {
+    return require(module);
+}
+
+function checkTypes(args, types) {
+    args = Array.prototype.slice.call(args);
+    for (var i = 0; i < types.length; ++i) {
+        if (typeof args[i] !== types[i]) {
+            throw new TypeError('param ' + i + ' must be of type ' + types[i]);
+        }
+    }
+}
+
+var performFetch = typeof fetch === 'undefined' ? node_require('node-fetch') : fetch;
+
+var url_parse = require(768        ); // 768 = url-parse
+
+var postHeaders = {
+    'content-type': 'application/json;charset=utf-8',
+    'accept': 'application/json'
+};
+
+function auth_url(server) {
+    if (server.charAt(server.length - 1) != '/') {
+        return server + '/auth';
+    }
+    return server + 'auth';
+}
+
+function scheduleAccessTokenRefresh(user, localRealmPath, realmUrl, expirationDate) {
+    var refreshBuffer = 10 * 1000;
+    var timeout = expirationDate - Date.now() - refreshBuffer;
+    setTimeout(function () {
+        return refreshAccessToken(user, localRealmPath, realmUrl);
+    }, timeout);
+}
+
+function refreshAccessToken(user, localRealmPath, realmUrl) {
+    var parsedRealmUrl = url_parse(realmUrl);
+    var url = auth_url(user.server);
+    var options = {
+        method: 'POST',
+        body: JSON.stringify({
+            data: user.token,
+            path: parsedRealmUrl.pathname,
+            provider: 'realm',
+            app_id: ''
+        }),
+        headers: postHeaders
+    };
+    performFetch(url, options).catch(function () {
+        return setTimeout(function () {
+            return refreshAccessToken(user, localRealmPath, realmUrl);
+        }, 10 * 1000);
+    }).then(function (response) {
+        return response.json().then(function (json) {
+            return { response: response, json: json };
+        });
+    }).then(function (responseAndJson) {
+        var response = responseAndJson.response;
+        var json = responseAndJson.json;
+
+        var newUser = user.constructor.all[user.identity];
+        if (newUser) {
+            var session = newUser._sessionForOnDiskPath(localRealmPath);
+            if (session) {
+                var errorHandler = session.config.error;
+                if (response.status != 200) {
+                    var error = new AuthError(json);
+                    if (errorHandler) {
+                        errorHandler(session, error);
+                    } else {
+                        (console.error || console.log).call(console, 'Unhandled session token refresh error: ' + error);
+                    }
+                } else if (session.state !== 'invalid') {
+                    parsedRealmUrl.set('pathname', json.access_token.token_data.path);
+                    session._refreshAccessToken(json.access_token.token, parsedRealmUrl.href);
+
+                    if (errorHandler && errorHandler._notifyOnAccessTokenRefreshed) {
+                        errorHandler(session, errorHandler._notifyOnAccessTokenRefreshed);
+                    }
+
+                    var tokenExpirationDate = new Date(json.access_token.token_data.expires * 1000);
+                    scheduleAccessTokenRefresh(newUser, localRealmPath, realmUrl, tokenExpirationDate);
+                }
+            }
+        }
+    });
+}
+
+function _authenticate(userConstructor, server, json, callback) {
+    json.app_id = '';
+    var url = auth_url(server);
+    var options = {
+        method: 'POST',
+        body: JSON.stringify(json),
+        headers: postHeaders,
+        open_timeout: 5000
+    };
+    performFetch(url, options).then(function (response) {
+        if (response.status !== 200) {
+            return response.json().then(function (body) {
+                return callback(new AuthError(body));
+            });
+        } else {
+            return response.json().then(function (body) {
+                var token = body.refresh_token.token;
+                var identity = body.refresh_token.token_data.identity;
+                callback(undefined, userConstructor.createUser(server, identity, token, false));
+            });
+        }
+    }).catch(callback);
+}
+
+module.exports = {
+    static: {
+        get current() {
+            var allUsers = this.all;
+            var keys = Object.keys(allUsers);
+            if (keys.length === 0) {
+                return undefined;
+            } else if (keys.length > 1) {
+                throw new Error("Multiple users are logged in");
+            }
+
+            return allUsers[keys[0]];
+        },
+
+        adminUser: function adminUser(token) {
+            checkTypes(arguments, ['string']);
+            var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0,
+                    v = c == 'x' ? r : r & 0x3 | 0x8;
+                return v.toString(16);
+            });
+            var user = this.createUser('', uuid, token, true);
+            return user;
+        },
+        register: function register(server, username, password, callback) {
+            checkTypes(arguments, ['string', 'string', 'string', 'function']);
+            _authenticate(this, server, {
+                provider: 'password',
+                user_info: { password: password, register: true },
+                data: username
+            }, callback);
+        },
+        login: function login(server, username, password, callback) {
+            checkTypes(arguments, ['string', 'string', 'string', 'function']);
+            _authenticate(this, server, {
+                provider: 'password',
+                user_info: { password: password },
+                data: username
+            }, callback);
+        },
+        registerWithProvider: function registerWithProvider(server, options, callback) {
+            if (arguments.length === 4) {
+                checkTypes(arguments, ['string', 'string', 'string', 'function']);
+                options = {
+                    provider: arguments[1],
+                    providerToken: arguments[2]
+                };
+                callback = arguments[3];
+            } else {
+                checkTypes(arguments, ['string', 'object', 'function']);
+            }
+
+            var reqOptions = {
+                provider: options.provider,
+                data: options.providerToken
+            };
+
+            if (options.userInfo) {
+                reqOptions.user_info = options.userInfo;
+            }
+
+            _authenticate(this, server, reqOptions, callback);
+        },
+
+
+        _refreshAccessToken: refreshAccessToken
+    },
+    instance: {
+        openManagementRealm: function openManagementRealm() {
+            var url = url_parse(this.server);
+            if (url.protocol === 'http:') {
+                url.set('protocol', 'realm:');
+            } else if (url.protocol === 'https:') {
+                url.set('protocol', 'realms:');
+            } else {
+                throw new Error('Unexpected user auth url: ' + this.server);
+            }
+
+            url.set('pathname', '/~/__management');
+
+            return new this.constructor._realmConstructor({
+                schema: require(771                  ), // 771 = ./management-schema
+                sync: {
+                    user: this,
+                    url: url.href
+                }
+            });
+        }
+    }
+};
+}, 766, null, "realm/lib/user-methods.js");
+__d(/* realm/lib/errors.js */function(global, require, module, exports) {
+
+'use strict';
+
+function AuthError(problem) {
+    Error.call(this, problem.title);
+    babelHelpers.extends(this, problem);
+}
+
+AuthError.__proto__ = Error;
+AuthError.prototype.__proto__ = Error.prototype;
+
+exports['AuthError'] = AuthError;
+}, 767, null, "realm/lib/errors.js");
+__d(/* url-parse/index.js */function(global, require, module, exports) {'use strict';
+
+var required = require(769            ), // 769 = requires-port
+    qs = require(770             ), // 770 = querystringify
+    protocolre = /^([a-z][a-z0-9.+-]*:)?(\/\/)?([\S\s]*)/i,
+    slashes = /^[A-Za-z][A-Za-z0-9+-.]*:\/\//;
+
+var rules = [['#', 'hash'], ['?', 'query'], ['/', 'pathname'], ['@', 'auth', 1], [NaN, 'host', undefined, 1, 1], [/:(\d+)$/, 'port', undefined, 1], [NaN, 'hostname', undefined, 1, 1]];
+
+var ignore = { hash: 1, query: 1 };
+
+function lolcation(loc) {
+  loc = loc || global.location || {};
+
+  var finaldestination = {},
+      type = typeof loc,
+      key;
+
+  if ('blob:' === loc.protocol) {
+    finaldestination = new URL(unescape(loc.pathname), {});
+  } else if ('string' === type) {
+    finaldestination = new URL(loc, {});
+    for (key in ignore) {
+      delete finaldestination[key];
+    }
+  } else if ('object' === type) {
+    for (key in loc) {
+      if (key in ignore) continue;
+      finaldestination[key] = loc[key];
+    }
+
+    if (finaldestination.slashes === undefined) {
+      finaldestination.slashes = slashes.test(loc.href);
+    }
+  }
+
+  return finaldestination;
+}
+
+function extractProtocol(address) {
+  var match = protocolre.exec(address);
+
+  return {
+    protocol: match[1] ? match[1].toLowerCase() : '',
+    slashes: !!match[2],
+    rest: match[3]
+  };
+}
+
+function resolve(relative, base) {
+  var path = (base || '/').split('/').slice(0, -1).concat(relative.split('/')),
+      i = path.length,
+      last = path[i - 1],
+      unshift = false,
+      up = 0;
+
+  while (i--) {
+    if (path[i] === '.') {
+      path.splice(i, 1);
+    } else if (path[i] === '..') {
+      path.splice(i, 1);
+      up++;
+    } else if (up) {
+      if (i === 0) unshift = true;
+      path.splice(i, 1);
+      up--;
+    }
+  }
+
+  if (unshift) path.unshift('');
+  if (last === '.' || last === '..') path.push('');
+
+  return path.join('/');
+}
+
+function URL(address, location, parser) {
+  if (!(this instanceof URL)) {
+    return new URL(address, location, parser);
+  }
+
+  var relative,
+      extracted,
+      parse,
+      instruction,
+      index,
+      key,
+      instructions = rules.slice(),
+      type = typeof location,
+      url = this,
+      i = 0;
+
+  if ('object' !== type && 'string' !== type) {
+    parser = location;
+    location = null;
+  }
+
+  if (parser && 'function' !== typeof parser) parser = qs.parse;
+
+  location = lolcation(location);
+
+  extracted = extractProtocol(address || '');
+  relative = !extracted.protocol && !extracted.slashes;
+  url.slashes = extracted.slashes || relative && location.slashes;
+  url.protocol = extracted.protocol || location.protocol || '';
+  address = extracted.rest;
+
+  if (!extracted.slashes) instructions[2] = [/(.*)/, 'pathname'];
+
+  for (; i < instructions.length; i++) {
+    instruction = instructions[i];
+    parse = instruction[0];
+    key = instruction[1];
+
+    if (parse !== parse) {
+      url[key] = address;
+    } else if ('string' === typeof parse) {
+      if (~(index = address.indexOf(parse))) {
+        if ('number' === typeof instruction[2]) {
+          url[key] = address.slice(0, index);
+          address = address.slice(index + instruction[2]);
+        } else {
+          url[key] = address.slice(index);
+          address = address.slice(0, index);
+        }
+      }
+    } else if (index = parse.exec(address)) {
+      url[key] = index[1];
+      address = address.slice(0, index.index);
+    }
+
+    url[key] = url[key] || (relative && instruction[3] ? location[key] || '' : '');
+
+    if (instruction[4]) url[key] = url[key].toLowerCase();
+  }
+
+  if (parser) url.query = parser(url.query);
+
+  if (relative && location.slashes && url.pathname.charAt(0) !== '/' && (url.pathname !== '' || location.pathname !== '')) {
+    url.pathname = resolve(url.pathname, location.pathname);
+  }
+
+  if (!required(url.port, url.protocol)) {
+    url.host = url.hostname;
+    url.port = '';
+  }
+
+  url.username = url.password = '';
+  if (url.auth) {
+    instruction = url.auth.split(':');
+    url.username = instruction[0] || '';
+    url.password = instruction[1] || '';
+  }
+
+  url.origin = url.protocol && url.host && url.protocol !== 'file:' ? url.protocol + '//' + url.host : 'null';
+
+  url.href = url.toString();
+}
+
+function set(part, value, fn) {
+  var url = this;
+
+  switch (part) {
+    case 'query':
+      if ('string' === typeof value && value.length) {
+        value = (fn || qs.parse)(value);
+      }
+
+      url[part] = value;
+      break;
+
+    case 'port':
+      url[part] = value;
+
+      if (!required(value, url.protocol)) {
+        url.host = url.hostname;
+        url[part] = '';
+      } else if (value) {
+        url.host = url.hostname + ':' + value;
+      }
+
+      break;
+
+    case 'hostname':
+      url[part] = value;
+
+      if (url.port) value += ':' + url.port;
+      url.host = value;
+      break;
+
+    case 'host':
+      url[part] = value;
+
+      if (/:\d+$/.test(value)) {
+        value = value.split(':');
+        url.port = value.pop();
+        url.hostname = value.join(':');
+      } else {
+        url.hostname = value;
+        url.port = '';
+      }
+
+      break;
+
+    case 'protocol':
+      url.protocol = value.toLowerCase();
+      url.slashes = !fn;
+      break;
+
+    case 'pathname':
+      url.pathname = value.length && value.charAt(0) !== '/' ? '/' + value : value;
+
+      break;
+
+    default:
+      url[part] = value;
+  }
+
+  for (var i = 0; i < rules.length; i++) {
+    var ins = rules[i];
+
+    if (ins[4]) url[ins[1]] = url[ins[1]].toLowerCase();
+  }
+
+  url.origin = url.protocol && url.host && url.protocol !== 'file:' ? url.protocol + '//' + url.host : 'null';
+
+  url.href = url.toString();
+
+  return url;
+}
+
+function toString(stringify) {
+  if (!stringify || 'function' !== typeof stringify) stringify = qs.stringify;
+
+  var query,
+      url = this,
+      protocol = url.protocol;
+
+  if (protocol && protocol.charAt(protocol.length - 1) !== ':') protocol += ':';
+
+  var result = protocol + (url.slashes ? '//' : '');
+
+  if (url.username) {
+    result += url.username;
+    if (url.password) result += ':' + url.password;
+    result += '@';
+  }
+
+  result += url.host + url.pathname;
+
+  query = 'object' === typeof url.query ? stringify(url.query) : url.query;
+  if (query) result += '?' !== query.charAt(0) ? '?' + query : query;
+
+  if (url.hash) result += url.hash;
+
+  return result;
+}
+
+URL.prototype = { set: set, toString: toString };
+
+URL.extractProtocol = extractProtocol;
+URL.location = lolcation;
+URL.qs = qs;
+
+module.exports = URL;
+}, 768, null, "url-parse/index.js");
+__d(/* requires-port/index.js */function(global, require, module, exports) {'use strict';
+
+module.exports = function required(port, protocol) {
+  protocol = protocol.split(':')[0];
+  port = +port;
+
+  if (!port) return false;
+
+  switch (protocol) {
+    case 'http':
+    case 'ws':
+      return port !== 80;
+
+    case 'https':
+    case 'wss':
+      return port !== 443;
+
+    case 'ftp':
+      return port !== 21;
+
+    case 'gopher':
+      return port !== 70;
+
+    case 'file':
+      return false;
+  }
+
+  return port !== 0;
+};
+}, 769, null, "requires-port/index.js");
+__d(/* querystringify/index.js */function(global, require, module, exports) {'use strict';
+
+var has = Object.prototype.hasOwnProperty;
+
+function decode(input) {
+  return decodeURIComponent(input.replace(/\+/g, ' '));
+}
+
+function querystring(query) {
+  var parser = /([^=?&]+)=?([^&]*)/g,
+      result = {},
+      part;
+
+  for (; part = parser.exec(query); result[decode(part[1])] = decode(part[2])) {}
+
+  return result;
+}
+
+function querystringify(obj, prefix) {
+  prefix = prefix || '';
+
+  var pairs = [];
+
+  if ('string' !== typeof prefix) prefix = '?';
+
+  for (var key in obj) {
+    if (has.call(obj, key)) {
+      pairs.push(encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]));
+    }
+  }
+
+  return pairs.length ? prefix + pairs.join('&') : '';
+}
+
+exports.stringify = querystringify;
+exports.parse = querystring;
+}, 770, null, "querystringify/index.js");
+__d(/* realm/lib/management-schema.js */function(global, require, module, exports) {
+
+'use strict';
+
+module.exports = [{
+    name: 'PermissionChange',
+    properties: {
+        id: { type: 'string' },
+        createdAt: { type: 'date' },
+        updatedAt: { type: 'date' },
+        statusCode: { type: 'int', optional: true },
+        statusMessage: { type: 'string', optional: true },
+        userId: { type: 'string' },
+        realmUrl: { type: 'string' },
+        mayRead: { type: 'bool', optional: true },
+        mayWrite: { type: 'bool', optional: true },
+        mayManage: { type: 'bool', optional: true }
+    },
+    primaryKey: 'id'
+}, {
+    name: 'PermissionOffer',
+    properties: {
+        id: { type: 'string' },
+        createdAt: { type: 'date' },
+        updatedAt: { type: 'date' },
+        statusCode: { type: 'int', optional: true },
+        statusMessage: { type: 'string', optional: true },
+        token: { type: 'string', optional: true, indexed: true },
+        realmUrl: { type: 'string' },
+        mayRead: { type: 'bool', default: false },
+        mayWrite: { type: 'bool', default: false },
+        mayManage: { type: 'bool', default: false },
+        expiresAt: { type: 'date', optional: true }
+    },
+    primaryKey: 'id'
+}, {
+    name: 'PermissionOfferResponse',
+    properties: {
+        id: { type: 'string' },
+        createdAt: { type: 'date' },
+        updatedAt: { type: 'date' },
+        statusCode: { type: 'int', optional: true },
+        statusMessage: { type: 'string', optional: true },
+        token: { type: 'string' },
+        realmUrl: { type: 'string', optional: true }
+    },
+    primaryKey: 'id'
+}];
+}, 771, null, "realm/lib/management-schema.js");
+__d(/* realm/lib/extensions.js */function(global, require, module, exports) {
+
+'use strict';
+
+var getOwnPropertyDescriptors = Object.getOwnPropertyDescriptors || function (obj) {
+    return Object.getOwnPropertyNames(obj).reduce(function (descriptors, name) {
+        descriptors[name] = Object.getOwnPropertyDescriptor(obj, name);
+        return descriptors;
+    }, {});
+};
+
+function setConstructorOnPrototype(klass) {
+    if (klass.prototype.constructor !== klass) {
+        Object.defineProperty(klass.prototype, 'constructor', { value: klass, configurable: true, writable: true });
+    }
+}
+
+module.exports = function (realmConstructor) {
+    Object.defineProperties(realmConstructor.Collection.prototype, require(773                   )); // 773 = ./collection-methods
+
+    setConstructorOnPrototype(realmConstructor.Collection);
+    setConstructorOnPrototype(realmConstructor.List);
+    setConstructorOnPrototype(realmConstructor.Results);
+    setConstructorOnPrototype(realmConstructor.Object);
+
+    if (realmConstructor.Sync) {
+        var userMethods = require(766             ); // 766 = ./user-methods
+        Object.defineProperties(realmConstructor.Sync.User, getOwnPropertyDescriptors(userMethods.static));
+        Object.defineProperties(realmConstructor.Sync.User.prototype, getOwnPropertyDescriptors(userMethods.instance));
+        Object.defineProperty(realmConstructor.Sync.User, '_realmConstructor', { value: realmConstructor });
+
+        realmConstructor.Sync.AuthError = require(767       ).AuthError; // 767 = ./errors
+
+        if (realmConstructor.Sync.cleanup) {
+            process.on('exit', realmConstructor.Sync.cleanup);
+            process.on('SIGINT', function () {
+                realmConstructor.Sync.cleanup();
+                process.exit(2);
+            });
+            process.on('uncaughtException', function (e) {
+                realmConstructor.Sync.cleanup();
+
+                console.log(e.stack);
+                process.exit(99);
+            });
+        }
+
+        setConstructorOnPrototype(realmConstructor.Sync.User);
+        setConstructorOnPrototype(realmConstructor.Sync.Session);
+    } else {
+        Object.defineProperty(realmConstructor, 'Sync', {
+            get: function get() {
+                throw new Error("Realm.Sync is not available. Note that the developer edition of the Node.JS SDK for Realm does not include sync on Linux.");
+            }
+        });
+    }
+
+    var types = Object.freeze({
+        'BOOL': 'bool',
+        'INT': 'int',
+        'FLOAT': 'float',
+        'DOUBLE': 'double',
+        'STRING': 'string',
+        'DATE': 'date',
+        'DATA': 'data',
+        'OBJECT': 'object',
+        'LIST': 'list'
+    });
+    Object.defineProperty(realmConstructor, 'Types', {
+        get: function get() {
+            if (typeof console != 'undefined') {
+                var stack = new Error().stack.split("\n").slice(2).join("\n");
+                var msg = '`Realm.Types` is deprecated! Please specify the type name as lowercase string instead!\n' + stack;
+                if (console.warn != undefined) {
+                    console.warn(msg);
+                } else {
+                    console.log(msg);
+                }
+            }
+            return types;
+        },
+        configurable: true
+    });
+};
+}, 772, null, "realm/lib/extensions.js");
+__d(/* realm/lib/collection-methods.js */function(global, require, module, exports) {
+
+'use strict';
+
+var arrayPrototype = Array.prototype;
+
+var iteratorPrototype = {};
+
+Object.defineProperty(iteratorPrototype, typeof Symbol === 'function' ? Symbol.iterator : '@@iterator', {
+    value: function () {
+        return this;
+    }
+});
+
+['join', 'slice', 'forEach', 'every', 'some', 'find', 'findIndex', 'map', 'reduce', 'reduceRight'].forEach(function (methodName) {
+    var method = arrayPrototype[methodName];
+    if (method) {
+        exports[methodName] = { value: method, configurable: true, writable: true };
+    }
+});
+
+['entries', 'keys', 'values'].forEach(function (methodName) {
+    var method = function method() {
+        var self = this;
+        var index = 0;
+
+        return Object.create(iteratorPrototype, {
+            next: {
+                value: function value() {
+                    if (!self || index >= self.length) {
+                        self = null;
+                        return { done: true, value: undefined };
+                    }
+
+                    var value;
+                    switch (methodName) {
+                        case 'entries':
+                            value = [index, self[index]];
+                            break;
+                        case 'keys':
+                            value = index;
+                            break;
+                        default:
+                            value = self[index];
+                    }
+
+                    index++;
+                    return { done: false, value: value };
+                }
+            }
+        });
+    };
+
+    exports[methodName] = { value: method, configurable: true, writable: true };
+});
+
+exports[typeof Symbol === 'function' ? Symbol.iterator : '@@iterator'] = exports.values;
+}, 773, null, "realm/lib/collection-methods.js");
+__d(/* whatTodo/src/DataStruc.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var DataStruc = function DataStruc(title, completed) {
+  babelHelpers.classCallCheck(this, DataStruc);
+
+  this.guid = function () {
+    var savetime = new Date();
+    var v = savetime.getFullYear() + (savetime.getMonth() + 1) + savetime.getDate() + savetime.getHours() + savetime.getMinutes() + savetime.getSeconds() + savetime.getMilliseconds();
+    return v.toString();
+  };
+
+  this.id = this.guid();
+  this.title = title;
+  this.completed = completed || false;
+  this.createdAt = new Date();
+  this.updatedAt = new Date();
+};
+
+exports.default = DataStruc;
+}, 774, null, "whatTodo/src/DataStruc.js");
 __d(/* realm/react-native/index.js */function(global, require, module, exports) {
 
 'use strict';
@@ -85777,12 +87774,12 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.ListView = undefined;
 
-var _listview = require(754         ); // 754 = ./listview
+var _listview = require(776         ); // 776 = ./listview
 
 var _listview2 = babelHelpers.interopRequireDefault(_listview);
 
 exports.ListView = _listview2.default;
-}, 753, null, "realm/react-native/index.js");
+}, 775, null, "realm/react-native/index.js");
 __d(/* realm/react-native/listview.js */function(global, require, module, exports) {
 
 'use strict';
@@ -85998,7 +87995,7 @@ ListView.propTypes = {
 };
 
 ListView.DataSource = ListViewDataSource;
-}, 754, null, "realm/react-native/listview.js");
+}, 776, null, "realm/react-native/listview.js");
 __d(/* whatTodo/src/TaskItem.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -86009,9 +88006,9 @@ var _react2 = babelHelpers.interopRequireDefault(_react);
 
 var _reactNative = require(46            ); // 46 = react-native
 
-var _moment = require(756     ); // 756 = moment
+var _moment = require(778     ); // 778 = moment
 
-var _DataQuery = require(757          ); // 757 = ./DataQuery
+var _DataQuery = require(753          ); // 753 = ./DataQuery
 
 var _DataQuery2 = babelHelpers.interopRequireDefault(_DataQuery);
 
@@ -86022,6 +88019,27 @@ var TaskItem = function (_Component) {
     babelHelpers.classCallCheck(this, TaskItem);
 
     var _this = babelHelpers.possibleConstructorReturn(this, (TaskItem.__proto__ || Object.getPrototypeOf(TaskItem)).call(this, props));
+
+    _this.onCompletePressed = function () {
+      var data = _this.state.data;
+      _DataQuery2.default.update(data, function () {
+        data.completed = !data.completed;
+      });
+      _this.setState({
+        data: data
+      });
+
+      _this.props.onCompletedChange();
+    };
+
+    _this.onDeletePressed = function () {
+      var data = _this.state.data;
+
+      _reactNative.Alert.alert('Alert Title', 'alertMessage', [{ text: 'Cancel' }, { text: 'OK', onPress: _DataQuery2.default.delete(data) }]);
+
+      _this.props.onCompletedChange();
+      _reactNative.ToastAndroid.show('Deleted', _reactNative.ToastAndroid.SHORT);
+    };
 
     _this.state = {
       data: _this.props.data
@@ -86040,17 +88058,21 @@ var TaskItem = function (_Component) {
     key: 'render',
     value: function render() {
       var data = this.state.data;
-      var color = data.completed ? '#C5C8C9' : '#000';
+      var color = data.completed ? '#FD0000' : '#000';
       var textDecorationLine = data.completed ? 'line-through' : 'none';
       return _react2.default.createElement(
         _reactNative.TouchableHighlight,
-        { underlayColor: '#eee', style: { paddingTop: 10, paddingBottom: 10, backgroundColor: "#F8F8F8", borderBottomWidth: 1, borderColor: '#eee' }, onPress: '' },
+        {
+          underlayColor: '#eee',
+          style: { paddingTop: 10, paddingBottom: 10, backgroundColor: "#F8F8F8", borderBottomWidth: 1, borderColor: '#eee' },
+          onPress: this.onCompletePressed,
+          onLongPress: this.onDeletePressed },
         _react2.default.createElement(
           _reactNative.View,
           { style: { flexDirection: 'row', alignItems: 'center' } },
           _react2.default.createElement(
             _reactNative.Text,
-            null,
+            { style: { fontSize: 18, color: color, textDecorationLine: textDecorationLine } },
             data.title
           )
         )
@@ -86061,7 +88083,7 @@ var TaskItem = function (_Component) {
 }(_react.Component);
 
 exports.default = TaskItem;
-}, 755, null, "whatTodo/src/TaskItem.js");
+}, 777, null, "whatTodo/src/TaskItem.js");
 __d(/* moment/moment.js */function(global, require, module, exports) {
 
 ;(function (global, factory) {
@@ -89986,1956 +92008,7 @@ __d(/* moment/moment.js */function(global, require, module, exports) {
 
     return hooks;
 });
-}, 756, null, "moment/moment.js");
-__d(/* whatTodo/src/DataQuery.js */function(global, require, module, exports) {var _realm = require(758    ); // 758 = realm
-
-var _realm2 = babelHelpers.interopRequireDefault(_realm);
-
-var _DataStruc = require(778          ); // 778 = ./DataStruc
-
-var _DataStruc2 = babelHelpers.interopRequireDefault(_DataStruc);
-
-var repository = new _realm2.default({
-  schema: [{
-    name: 'Todo',
-    primaryKey: 'id',
-    properties: {
-      id: { type: 'string', indexed: true },
-      title: 'string',
-      completed: 'bool',
-      createdAt: 'date',
-      updatedAt: 'date'
-    }
-  }]
-});
-
-var DataQuery = {
-  findAll: function findAll(sortBy) {
-    if (!sortBy) sortBy = [['completed', false], ['updatedAt', true]];
-    return repository.objects('Todo').sorted(sortBy);
-  },
-
-  save: function save(todo) {
-    if (repository.objects('Todo').filtered("title = '" + todo.title + "'").length) return;
-
-    repository.write(function () {
-      todo.updatedAt = new Date();
-      repository.create('Todo', todo);
-    });
-  },
-
-  update: function update(todo, callback) {
-    if (!callback) return;
-    repository.write(function () {
-      callback();
-      todo.updatedAt = new Date();
-    });
-  },
-
-  delete: function _delete(todo, callback) {
-    if (!callback) return;
-    repository.write(function () {
-      callback();
-      repository.delete(todo);
-    });
-  }
-};
-
-module.exports = DataQuery;
-}, 757, null, "whatTodo/src/DataQuery.js");
-__d(/* realm/lib/index.js */function(global, require, module, exports) {
-
-'use strict';
-
-function nodeRequire(module) {
-    return require(module);
-}
-
-function getContext() {
-    if (typeof process === 'object' && process + '' === '[object process]') {
-        return process.type === 'renderer' ? 'electron' : 'nodejs';
-    }
-
-    if (typeof jest === 'object') {
-        return 'nodejs';
-    }
-
-    if (typeof Realm !== 'undefined') {
-        if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
-            return 'reactnative';
-        }
-
-        return 'jscore';
-    }
-
-    if (typeof global !== 'undefined' && global.__debug__) {
-        return 'vscodedebugger';
-    }
-
-    if (typeof navigator !== 'undefined' && /Chrome/.test(navigator.userAgent)) {
-        return 'chromedebugger';
-    }
-
-    throw Error("Unknown execution context");
-}
-
-var realmConstructor;
-
-switch (getContext()) {
-    case 'nodejs':
-    case 'electron':
-        nodeRequire('./submit-analytics')('Run');
-
-        var binary = nodeRequire('node-pre-gyp');
-        var path = nodeRequire('path');
-        var pkg = path.resolve(path.join(__dirname, '../package.json'));
-        var binding_path = binary.find(pkg);
-
-        realmConstructor = require(binding_path).Realm;
-        break;
-
-    case 'reactnative':
-    case 'jscore':
-        realmConstructor = Realm;
-        break;
-
-    case 'chromedebugger':
-    case 'vscodedebugger':
-        realmConstructor = require(759        ).default; // 759 = ./browser
-        break;
-}
-
-if (!realmConstructor) {
-    throw new Error('Missing Realm constructor. Did you run "react-native link realm"? Please see https://realm.io/docs/react-native/latest/#missing-realm-constructor for troubleshooting');
-}
-
-require(776           )(realmConstructor); // 776 = ./extensions
-
-module.exports = realmConstructor;
-}, 758, null, "realm/lib/index.js");
-__d(/* realm/lib/browser/index.js */function(global, require, module, exports) {
-
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _reactNative = require(46            ); // 46 = react-native
-
-var _constants = require(760          ); // 760 = ./constants
-
-var _collections = require(761            ); // 761 = ./collections
-
-var collections = babelHelpers.interopRequireWildcard(_collections);
-
-var _lists = require(765      ); // 765 = ./lists
-
-var _lists2 = babelHelpers.interopRequireDefault(_lists);
-
-var _results = require(766        ); // 766 = ./results
-
-var _results2 = babelHelpers.interopRequireDefault(_results);
-
-var _objects = require(767        ); // 767 = ./objects
-
-var objects = babelHelpers.interopRequireWildcard(_objects);
-
-var _user = require(768     ); // 768 = ./user
-
-var _user2 = babelHelpers.interopRequireDefault(_user);
-
-var _session = require(769        ); // 769 = ./session
-
-var _session2 = babelHelpers.interopRequireDefault(_session);
-
-var _rpc = require(763    ); // 763 = ./rpc
-
-var rpc = babelHelpers.interopRequireWildcard(_rpc);
-
-var _util = require(762     ); // 762 = ./util
-
-var util = babelHelpers.interopRequireWildcard(_util);
-
-var _userMethods = require(770              ); // 770 = ../user-methods
-
-var _NativeModules$Realm = _reactNative.NativeModules.Realm,
-    debugHosts = _NativeModules$Realm.debugHosts,
-    debugPort = _NativeModules$Realm.debugPort;
-
-
-rpc.registerTypeConverter(_constants.objectTypes.LIST, _lists.createList);
-rpc.registerTypeConverter(_constants.objectTypes.RESULTS, _results.createResults);
-rpc.registerTypeConverter(_constants.objectTypes.OBJECT, objects.createObject);
-rpc.registerTypeConverter(_constants.objectTypes.REALM, createRealm);
-rpc.registerTypeConverter(_constants.objectTypes.USER, _user.createUser);
-rpc.registerTypeConverter(_constants.objectTypes.SESSION, _session.createSession);
-
-function createRealm(_, info) {
-    var realm = Object.create(Realm.prototype);
-
-    setupRealm(realm, info.id);
-    return realm;
-}
-
-function setupRealm(realm, realmId) {
-    realm[_constants.keys.id] = realmId;
-    realm[_constants.keys.realm] = realmId;
-    realm[_constants.keys.type] = _constants.objectTypes.REALM;
-
-    ['path', 'readOnly', 'schema', 'schemaVersion', 'syncSession'].forEach(function (name) {
-        Object.defineProperty(realm, name, { get: util.getterForProperty(name) });
-    });
-}
-
-function getObjectType(realm, type) {
-    if (typeof type == 'function') {
-        return objects.typeForConstructor(realm[_constants.keys.realm], type);
-    }
-    return type;
-}
-
-var Realm = function () {
-    function Realm(config) {
-        babelHelpers.classCallCheck(this, Realm);
-
-        var schemas = typeof config == 'object' && config.schema;
-        var constructors = schemas ? {} : null;
-
-        for (var i = 0, len = schemas ? schemas.length : 0; i < len; i++) {
-            var item = schemas[i];
-
-            if (typeof item == 'function') {
-                var schema = item.schema;
-                if (!schema || typeof schema != 'object') {
-                    throw new Error("Realm object constructor must have 'schema' property");
-                }
-
-                var name = schema.name,
-                    properties = schema.properties;
-
-                if (!name || typeof name != 'string') {
-                    throw new Error("Realm object schema must have 'name' property");
-                } else if (!properties || typeof properties != 'object') {
-                    throw new Error("Realm object schema must have 'properties' property");
-                }
-
-                schemas.splice(i, 1, schema);
-                constructors[name] = item;
-            }
-        }
-
-        var realmId = rpc.createRealm(Array.from(arguments));
-        setupRealm(this, realmId);
-
-        objects.registerConstructors(realmId, this.path, constructors);
-    }
-
-    babelHelpers.createClass(Realm, [{
-        key: 'create',
-        value: function create(type) {
-            var method = util.createMethod(_constants.objectTypes.REALM, 'create', true);
-
-            for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-                args[_key - 1] = arguments[_key];
-            }
-
-            return method.apply(this, [getObjectType(this, type)].concat(args));
-        }
-    }, {
-        key: 'objects',
-        value: function objects(type) {
-            var method = util.createMethod(_constants.objectTypes.REALM, 'objects');
-
-            for (var _len2 = arguments.length, args = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-                args[_key2 - 1] = arguments[_key2];
-            }
-
-            return method.apply(this, [getObjectType(this, type)].concat(args));
-        }
-    }, {
-        key: 'objectForPrimaryKey',
-        value: function objectForPrimaryKey(type) {
-            var method = util.createMethod(_constants.objectTypes.REALM, 'objectForPrimaryKey');
-
-            for (var _len3 = arguments.length, args = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-                args[_key3 - 1] = arguments[_key3];
-            }
-
-            return method.apply(this, [getObjectType(this, type)].concat(args));
-        }
-    }]);
-    return Realm;
-}();
-
-exports.default = Realm;
-
-util.createMethods(Realm.prototype, _constants.objectTypes.REALM, ['addListener', 'removeListener', 'removeAllListeners', 'close']);
-
-util.createMethods(Realm.prototype, _constants.objectTypes.REALM, ['delete', 'deleteAll', 'write'], true);
-
-var Sync = {
-    User: _user2.default,
-    Session: _session2.default
-};
-
-Object.defineProperties(Realm, {
-    Collection: {
-        value: collections.default
-    },
-    List: {
-        value: _lists2.default
-    },
-    Results: {
-        value: _results2.default
-    },
-    Object: {
-        value: objects.default
-    },
-    Sync: {
-        value: Sync
-    },
-    defaultPath: {
-        get: util.getterForProperty('defaultPath'),
-        set: util.setterForProperty('defaultPath')
-    },
-    schemaVersion: {
-        value: function value(_path, _encryptionKey) {
-            return rpc.callMethod(undefined, Realm[_constants.keys.id], 'schemaVersion', Array.from(arguments));
-        }
-    },
-    copyBundledRealmFiles: {
-        value: function value() {
-            return rpc.callMethod(undefined, Realm[_constants.keys.id], 'copyBundledRealmFiles', []);
-        }
-    },
-    clearTestState: {
-        value: function value() {
-            collections.clearMutationListeners();
-            objects.clearRegisteredConstructors();
-            rpc.clearTestState();
-        }
-    }
-});
-
-for (var i = 0, len = debugHosts.length; i < len; i++) {
-    try {
-        var refreshAccessTokenCallback = _userMethods.static._refreshAccessToken.bind(_user2.default);
-
-        Realm[_constants.keys.id] = rpc.createSession(refreshAccessTokenCallback, debugHosts[i] + ':' + debugPort);
-        break;
-    } catch (e) {
-        if (i < len - 1) {
-            continue;
-        }
-
-        console.error(e);
-
-        throw new Error('Realm failed to connect to the embedded debug server inside the app. ' + 'If attempting to use Chrome debugging from a device, ensure the device is ' + 'reachable on the same network as this machine.');
-    }
-}
-}, 759, null, "realm/lib/browser/index.js");
-__d(/* realm/lib/browser/constants.js */function(global, require, module, exports) {
-
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-var keys = exports.keys = {};
-var objectTypes = exports.objectTypes = {};
-var propTypes = exports.propTypes = {};
-
-['id', 'realm', 'type'].forEach(function (name) {
-    keys[name] = Symbol(name);
-});
-
-['DATA', 'DATE', 'DICT', 'FUNCTION', 'LIST', 'OBJECT', 'REALM', 'RESULTS', 'USER', 'SESSION', 'UNDEFINED'].forEach(function (type) {
-    Object.defineProperty(objectTypes, type, {
-        value: type.toLowerCase()
-    });
-});
-
-['BOOL', 'INT', 'FLOAT', 'DOUBLE', 'STRING', 'DATE', 'DATA', 'OBJECT', 'LIST'].forEach(function (type) {
-    Object.defineProperty(propTypes, type, {
-        value: type.toLowerCase(),
-        enumerable: true
-    });
-});
-}, 760, null, "realm/lib/browser/constants.js");
-__d(/* realm/lib/browser/collections.js */function(global, require, module, exports) {
-
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.addMutationListener = addMutationListener;
-exports.removeMutationListener = removeMutationListener;
-exports.clearMutationListeners = clearMutationListeners;
-exports.fireMutationListeners = fireMutationListeners;
-exports.createCollection = createCollection;
-
-var _constants = require(760          ); // 760 = ./constants
-
-var _util = require(762     ); // 762 = ./util
-
-var _rpc = require(763    ); // 763 = ./rpc
-
-var mutationListeners = {};
-
-var Collection = function Collection() {
-    babelHelpers.classCallCheck(this, Collection);
-
-    throw new TypeError('Illegal constructor');
-};
-
-exports.default = Collection;
-function addMutationListener(realmId, callback) {
-    var listeners = mutationListeners[realmId] || (mutationListeners[realmId] = new Set());
-    listeners.add(callback);
-}
-
-function removeMutationListener(realmId, callback) {
-    var listeners = mutationListeners[realmId];
-    if (listeners) {
-        listeners.delete(callback);
-    }
-}
-
-function clearMutationListeners() {
-    mutationListeners = {};
-}
-
-function fireMutationListeners(realmId) {
-    var listeners = mutationListeners[realmId];
-    if (listeners) {
-        listeners.forEach(function (cb) {
-            return cb();
-        });
-    }
-}
-
-function isIndex(propertyName) {
-    return typeof propertyName === 'number' || typeof propertyName === 'string' && /^\d+$/.test(propertyName);
-}
-
-var mutable = Symbol('mutable');
-
-var traps = {
-    get: function get(collection, property, receiver) {
-        if (isIndex(property)) {
-            return (0, _rpc.getProperty)(collection[_constants.keys.realm], collection[_constants.keys.id], property);
-        }
-
-        return Reflect.get(collection, property, collection);
-    },
-    set: function set(collection, property, value, receiver) {
-        if (isIndex(property)) {
-            if (!collection[mutable]) {
-                return false;
-            }
-
-            (0, _rpc.setProperty)(collection[_constants.keys.realm], collection[_constants.keys.id], property, value);
-
-            if (value && typeof value == 'object') {
-                fireMutationListeners(collection[_constants.keys.realm]);
-            }
-
-            return true;
-        }
-
-        return Reflect.set(collection, property, value, collection);
-    },
-    ownKeys: function ownKeys(collection) {
-        return Reflect.ownKeys(collection).concat(Array.from({ length: collection.length }, function (value, key) {
-            return String(key);
-        }));
-    },
-    getOwnPropertyDescriptor: function getOwnPropertyDescriptor(collection, property) {
-        var _this = this;
-
-        if (isIndex(property)) {
-            var descriptor = {
-                enumerable: true,
-                configurable: true,
-                writable: collection[mutable]
-            };
-            Reflect.defineProperty(descriptor, "value", { get: function get() {
-                    return _this.get(collection, property);
-                } });
-            return descriptor;
-        }
-
-        return Reflect.getOwnPropertyDescriptor(collection, property);
-    },
-    has: function has(collection, property) {
-        if (isIndex(property)) {
-            return true;
-        }
-
-        return Reflect.has(collection, property);
-    }
-};
-
-function createCollection(prototype, realmId, info, _mutable) {
-    var collection = Object.create(prototype);
-
-    Object.defineProperties(collection, {
-        'length': {
-            get: (0, _util.getterForProperty)('length')
-        },
-        '-1': {
-            value: undefined
-        }
-    });
-
-    collection[_constants.keys.realm] = realmId;
-    collection[_constants.keys.id] = info.id;
-    collection[_constants.keys.type] = info.type;
-    collection[mutable] = _mutable;
-
-    return new Proxy(collection, traps);
-}
-}, 761, null, "realm/lib/browser/collections.js");
-__d(/* realm/lib/browser/util.js */function(global, require, module, exports) {
-
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.createMethods = createMethods;
-exports.createMethod = createMethod;
-exports.getterForProperty = getterForProperty;
-exports.setterForProperty = setterForProperty;
-
-var _collections = require(761            ); // 761 = ./collections
-
-var _constants = require(760          ); // 760 = ./constants
-
-var _rpc = require(763    ); // 763 = ./rpc
-
-var rpc = babelHelpers.interopRequireWildcard(_rpc);
-function createMethods(prototype, type, methodNames, mutates) {
-    var props = {};
-
-    methodNames.forEach(function (name) {
-        props[name] = {
-            value: createMethod(type, name, mutates)
-        };
-    });
-
-    Object.defineProperties(prototype, props);
-}
-
-function createMethod(type, name, mutates) {
-    return function () {
-        var realmId = this[_constants.keys.realm];
-        var id = this[_constants.keys.id];
-
-        if (!realmId || !id) {
-            throw new TypeError(name + ' method was not called a Realm object!');
-        }
-        if (this[_constants.keys.type] !== type) {
-            throw new TypeError(name + ' method was called on an object of the wrong type!');
-        }
-
-        try {
-            return rpc.callMethod(realmId, id, name, Array.from(arguments));
-        } finally {
-            if (mutates) {
-                (0, _collections.fireMutationListeners)(realmId);
-            }
-        }
-    };
-}
-
-function getterForProperty(name) {
-    return function () {
-        return rpc.getProperty(this[_constants.keys.realm], this[_constants.keys.id], name);
-    };
-}
-
-function setterForProperty(name) {
-    return function (value) {
-        var realmId = this[_constants.keys.realm];
-
-        rpc.setProperty(realmId, this[_constants.keys.id], name, value);
-
-        if (value && typeof value == 'object') {
-            (0, _collections.fireMutationListeners)(realmId);
-        }
-    };
-}
-}, 762, null, "realm/lib/browser/util.js");
-__d(/* realm/lib/browser/rpc.js */function(global, require, module, exports) {
-
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.registerTypeConverter = registerTypeConverter;
-exports.createSession = createSession;
-exports.createRealm = createRealm;
-exports.createUser = createUser;
-exports.callMethod = callMethod;
-exports.getProperty = getProperty;
-exports.setProperty = setProperty;
-exports.getAllUsers = getAllUsers;
-exports.clearTestState = clearTestState;
-exports.deserialize = deserialize;
-
-var _base = require(764       ); // 764 = ./base64
-
-var base64 = babelHelpers.interopRequireWildcard(_base);
-
-var _constants = require(760          ); // 760 = ./constants
-
-var idKey = _constants.keys.id,
-    _realmKey = _constants.keys.realm;
-
-var registeredCallbacks = [];
-var typeConverters = {};
-
-var persistentCallback = Symbol("persistentCallback");
-
-var XMLHttpRequest = global.originalXMLHttpRequest || global.XMLHttpRequest;
-var sessionHost = void 0;
-var sessionId = void 0;
-
-if (XMLHttpRequest.__proto__ != global.XMLHttpRequestEventTarget) {
-    var fakeXMLHttpRequest = XMLHttpRequest;
-    delete global.XMLHttpRequest;
-    XMLHttpRequest = global.XMLHttpRequest;
-    global.XMLHttpRequest = fakeXMLHttpRequest;
-}
-
-registerTypeConverter(_constants.objectTypes.DATA, function (_, _ref) {
-    var value = _ref.value;
-    return base64.decode(value);
-});
-registerTypeConverter(_constants.objectTypes.DATE, function (_, _ref2) {
-    var value = _ref2.value;
-    return new Date(value);
-});
-registerTypeConverter(_constants.objectTypes.DICT, deserializeDict);
-registerTypeConverter(_constants.objectTypes.FUNCTION, deserializeFunction);
-
-function registerTypeConverter(type, handler) {
-    typeConverters[type] = handler;
-}
-
-function createSession(refreshAccessToken, host) {
-    refreshAccessToken[persistentCallback] = true;
-    sessionId = sendRequest('create_session', { refreshAccessToken: serialize(undefined, refreshAccessToken) }, host);
-    sessionHost = host;
-
-    return sessionId;
-}
-
-function createRealm(args) {
-    if (args) {
-        args = args.map(function (arg) {
-            return serialize(null, arg);
-        });
-    }
-
-    return sendRequest('create_realm', { arguments: args });
-}
-
-function createUser(args) {
-    args = args.map(function (arg) {
-        return serialize(null, arg);
-    });
-    var result = sendRequest('create_user', { arguments: args });
-    return deserialize(undefined, result);
-}
-
-function callMethod(realmId, id, name, args) {
-    if (args) {
-        args = args.map(function (arg) {
-            return serialize(realmId, arg);
-        });
-    }
-
-    var result = sendRequest('call_method', { realmId: realmId, id: id, name: name, arguments: args });
-    return deserialize(realmId, result);
-}
-
-function getProperty(realmId, id, name) {
-    var result = sendRequest('get_property', { realmId: realmId, id: id, name: name });
-    return deserialize(realmId, result);
-}
-
-function setProperty(realmId, id, name, value) {
-    value = serialize(realmId, value);
-    sendRequest('set_property', { realmId: realmId, id: id, name: name, value: value });
-}
-
-function getAllUsers() {
-    var result = sendRequest('get_all_users');
-    return deserialize(undefined, result);
-}
-
-function clearTestState() {
-    sendRequest('clear_test_state');
-
-    registeredCallbacks = registeredCallbacks.filter(function (cb) {
-        return Reflect.has(cb, persistentCallback);
-    });
-}
-
-function registerCallback(callback) {
-    var key = registeredCallbacks.indexOf(callback);
-    return key >= 0 ? key : registeredCallbacks.push(callback) - 1;
-}
-
-function serialize(realmId, value) {
-    if (typeof value == 'undefined') {
-        return { type: _constants.objectTypes.UNDEFINED };
-    }
-    if (typeof value == 'function') {
-        return { type: _constants.objectTypes.FUNCTION, value: registerCallback(value) };
-    }
-    if (!value || typeof value != 'object') {
-        return { value: value };
-    }
-
-    var id = value[idKey];
-    if (id) {
-        return { id: id };
-    }
-
-    if (value instanceof Date) {
-        return { type: _constants.objectTypes.DATE, value: value.getTime() };
-    }
-
-    if (Array.isArray(value)) {
-        var array = value.map(function (item) {
-            return serialize(realmId, item);
-        });
-        return { value: array };
-    }
-
-    if (value instanceof ArrayBuffer || ArrayBuffer.isView(value)) {
-        return { type: _constants.objectTypes.DATA, value: base64.encode(value) };
-    }
-
-    var keys = Object.keys(value);
-    var values = keys.map(function (key) {
-        return serialize(realmId, value[key]);
-    });
-    return { type: _constants.objectTypes.DICT, keys: keys, values: values };
-}
-
-function deserialize(realmId, info) {
-    var type = info.type;
-    var handler = type && typeConverters[type];
-    if (handler) {
-        return handler(realmId, info);
-    }
-
-    var value = info.value;
-    if (value && Array.isArray(value)) {
-        return value.map(function (item) {
-            return deserialize(realmId, item);
-        });
-    }
-
-    return value;
-}
-
-function deserializeDict(realmId, info) {
-    var keys = info.keys,
-        values = info.values;
-
-    var object = {};
-
-    for (var i = 0, len = keys.length; i < len; i++) {
-        object[keys[i]] = deserialize(realmId, values[i]);
-    }
-
-    return object;
-}
-
-function deserializeFunction(realmId, info) {
-    return registeredCallbacks[info.value];
-}
-
-function makeRequest(url, data) {
-    var statusCode = void 0;
-    var responseText = void 0;
-
-    if (global.__debug__) {
-        var request = global.__debug__.require('sync-request');
-        var response = request('POST', url, {
-            body: JSON.stringify(data),
-            headers: {
-                "Content-Type": "text/plain;charset=UTF-8"
-            }
-        });
-
-        statusCode = response.statusCode;
-        responseText = response.body.toString('utf-8');
-    } else {
-        var body = JSON.stringify(data);
-        var _request = new XMLHttpRequest();
-
-        _request.open('POST', url, false);
-        _request.send(body);
-
-        statusCode = _request.status;
-        responseText = _request.responseText;
-    }
-
-    if (statusCode != 200) {
-        throw new Error(responseText);
-    }
-
-    return JSON.parse(responseText);
-}
-
-function sendRequest(command, data) {
-    var host = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : sessionHost;
-
-    if (!host) {
-        throw new Error('Must first create RPC session with a valid host');
-    }
-
-    data = babelHelpers.extends({}, data, sessionId ? { sessionId: sessionId } : null);
-
-    var url = 'http://' + host + '/' + command;
-    var response = makeRequest(url, data);
-
-    if (!response || response.error) {
-        var error = response && response.error;
-
-        if (error) {
-            error = error.replace(/^[a-z]+: /i, '');
-        }
-
-        throw new Error(error || 'Invalid response for "' + command + '"');
-    }
-
-    var callback = response.callback;
-    if (callback != null) {
-        var result = void 0;
-        var _error = void 0;
-        try {
-            var realmId = data.realmId;
-            var thisObject = deserialize(realmId, response.this);
-            var args = deserialize(realmId, response.arguments);
-            result = registeredCallbacks[callback].apply(thisObject, args);
-            result = serialize(realmId, result);
-        } catch (e) {
-            _error = e.message || '' + e;
-        }
-        return sendRequest('callback_result', { callback: callback, result: result, error: _error });
-    }
-
-    return response.result;
-}
-}, 763, null, "realm/lib/browser/rpc.js");
-__d(/* realm/lib/browser/base64.js */function(global, require, module, exports) {
-
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.decode = decode;
-exports.encode = encode;
-var CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-var CHAR_MAP = {};
-
-Array.from(CHARS, function (char, i) {
-    return CHAR_MAP[char] = i;
-});
-
-function decode(base64) {
-    var length = base64.length;
-    var byteCount = length * 0.75;
-
-    if (base64[length - 1] === '=') {
-        byteCount--;
-        if (base64[length - 2] === '=') {
-            byteCount--;
-        }
-    }
-
-    var buffer = new ArrayBuffer(byteCount);
-    var bytes = new Uint8Array(buffer);
-
-    for (var i = 0, j = 0; i < length; i += 4) {
-        var index1 = CHAR_MAP[base64[i]];
-        var index2 = CHAR_MAP[base64[i + 1]];
-        var index3 = CHAR_MAP[base64[i + 2]];
-        var index4 = CHAR_MAP[base64[i + 3]];
-
-        bytes[j++] = (index1 << 2) + ((index2 & 0x30) >> 4);
-        bytes[j++] = ((index2 & 0x0f) << 4) + ((index3 & 0x3c) >> 2);
-        bytes[j++] = ((index3 & 0x03) << 6) + index4;
-    }
-
-    return buffer;
-}
-
-function encode(data) {
-    var byteOffset = 0;
-    var buffer;
-
-    if (data instanceof ArrayBuffer) {
-        buffer = data;
-    } else if (ArrayBuffer.isView(data)) {
-        buffer = data.buffer;
-        byteOffset = data.byteOffset;
-    } else {
-        throw new TypeError('Can only base64 encode ArrayBuffer and ArrayBufferView objects');
-    }
-
-    var byteCount = data.byteLength;
-    var bytes = new Uint8Array(buffer, byteOffset, byteCount);
-    var base64 = '';
-
-    for (var i = 0; i < byteCount; i += 3) {
-        base64 += CHARS[(bytes[i] & 0xfc) >> 2];
-        base64 += CHARS[((bytes[i] & 0x03) << 4) + ((bytes[i + 1] & 0xf0) >> 4)];
-        base64 += CHARS[((bytes[i + 1] & 0x0f) << 2) + ((bytes[i + 2] & 0xc0) >> 6)];
-        base64 += CHARS[bytes[i + 2] & 0x3f];
-    }
-
-    switch (byteCount % 3) {
-        case 1:
-            return base64.slice(0, -2) + '==';
-        case 2:
-            return base64.slice(0, -1) + '=';
-        default:
-            return base64;
-    }
-}
-}, 764, null, "realm/lib/browser/base64.js");
-__d(/* realm/lib/browser/lists.js */function(global, require, module, exports) {
-
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.createList = createList;
-
-var _collections = require(761            ); // 761 = ./collections
-
-var _collections2 = babelHelpers.interopRequireDefault(_collections);
-
-var _constants = require(760          ); // 760 = ./constants
-
-var _util = require(762     ); // 762 = ./util
-
-var List = function (_Collection) {
-    babelHelpers.inherits(List, _Collection);
-
-    function List() {
-        babelHelpers.classCallCheck(this, List);
-        return babelHelpers.possibleConstructorReturn(this, (List.__proto__ || Object.getPrototypeOf(List)).apply(this, arguments));
-    }
-
-    return List;
-}(_collections2.default);
-
-exports.default = List;
-
-(0, _util.createMethods)(List.prototype, _constants.objectTypes.LIST, ['filtered', 'sorted', 'snapshot', 'isValid', 'addListener', 'removeListener', 'removeAllListeners']);
-
-(0, _util.createMethods)(List.prototype, _constants.objectTypes.LIST, ['pop', 'shift', 'push', 'unshift', 'splice'], true);
-
-function createList(realmId, info) {
-    return (0, _collections.createCollection)(List.prototype, realmId, info, true);
-}
-}, 765, null, "realm/lib/browser/lists.js");
-__d(/* realm/lib/browser/results.js */function(global, require, module, exports) {
-
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.createResults = createResults;
-
-var _collections = require(761            ); // 761 = ./collections
-
-var _collections2 = babelHelpers.interopRequireDefault(_collections);
-
-var _constants = require(760          ); // 760 = ./constants
-
-var _util = require(762     ); // 762 = ./util
-
-var Results = function (_Collection) {
-    babelHelpers.inherits(Results, _Collection);
-
-    function Results() {
-        babelHelpers.classCallCheck(this, Results);
-        return babelHelpers.possibleConstructorReturn(this, (Results.__proto__ || Object.getPrototypeOf(Results)).apply(this, arguments));
-    }
-
-    return Results;
-}(_collections2.default);
-
-exports.default = Results;
-
-
-(0, _util.createMethods)(Results.prototype, _constants.objectTypes.RESULTS, ['filtered', 'sorted', 'snapshot', 'isValid', 'addListener', 'removeListener', 'removeAllListeners']);
-
-function createResults(realmId, info) {
-    return (0, _collections.createCollection)(Results.prototype, realmId, info);
-}
-}, 766, null, "realm/lib/browser/results.js");
-__d(/* realm/lib/browser/objects.js */function(global, require, module, exports) {
-
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.clearRegisteredConstructors = clearRegisteredConstructors;
-exports.createObject = createObject;
-exports.registerConstructors = registerConstructors;
-exports.typeForConstructor = typeForConstructor;
-
-var _constants = require(760          ); // 760 = ./constants
-
-var _util = require(762     ); // 762 = ./util
-
-var registeredConstructors = {};
-var registeredRealmPaths = {};
-
-var RealmObject = function RealmObject() {
-    babelHelpers.classCallCheck(this, RealmObject);
-};
-
-exports.default = RealmObject;
-
-(0, _util.createMethods)(RealmObject.prototype, _constants.objectTypes.OBJECT, ['isValid']);
-
-function clearRegisteredConstructors() {
-    registeredConstructors = {};
-    registeredRealmPaths = {};
-}
-
-function createObject(realmId, info) {
-    var schema = info.schema;
-    var realmPath = registeredRealmPaths[realmId];
-    var constructor = (registeredConstructors[realmPath] || {})[schema.name];
-    var object = Object.create(constructor ? constructor.prototype : RealmObject.prototype);
-
-    object[_constants.keys.realm] = realmId;
-    object[_constants.keys.id] = info.id;
-    object[_constants.keys.type] = info.type;
-
-    schema.properties.forEach(function (name) {
-        Object.defineProperty(object, name, {
-            enumerable: true,
-            get: (0, _util.getterForProperty)(name),
-            set: (0, _util.setterForProperty)(name)
-        });
-    });
-
-    if (constructor) {
-        var result = constructor.call(object);
-        if (result != null && result != object) {
-            throw new Error('Realm object constructor must not return another value');
-        }
-    }
-
-    return object;
-}
-
-function registerConstructors(realmId, realmPath, constructors) {
-    registeredRealmPaths[realmId] = realmPath;
-
-    if (constructors) {
-        registeredConstructors[realmPath] = constructors;
-    }
-}
-
-function typeForConstructor(realmId, constructor) {
-    var realmPath = registeredRealmPaths[realmId];
-    var constructors = registeredConstructors[realmPath];
-
-    for (var name in constructors) {
-        if (constructors[name] == constructor) {
-            return name;
-        }
-    }
-
-    return null;
-}
-}, 767, null, "realm/lib/browser/objects.js");
-__d(/* realm/lib/browser/user.js */function(global, require, module, exports) {
-
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.createUser = createUser;
-
-var _rpc = require(763    ); // 763 = ./rpc
-
-var _constants = require(760          ); // 760 = ./constants
-
-var _util = require(762     ); // 762 = ./util
-
-var User = function () {
-    function User() {
-        babelHelpers.classCallCheck(this, User);
-    }
-
-    babelHelpers.createClass(User, null, [{
-        key: 'createUser',
-        value: function createUser(server, identity, token, isAdmin) {
-            return (0, _rpc.createUser)(Array.from(arguments));
-        }
-    }, {
-        key: 'all',
-        get: function get() {
-            return (0, _rpc.getAllUsers)();
-        }
-    }]);
-    return User;
-}();
-
-exports.default = User;
-
-
-(0, _util.createMethods)(User.prototype, _constants.objectTypes.USER, ['logout', '_sessionForOnDiskPath']);
-
-function createUser(realmId, info) {
-    var userProxy = Object.create(User.prototype);
-
-    userProxy[_constants.keys.realm] = "(User object)";
-
-    userProxy[_constants.keys.id] = info.id;
-    userProxy[_constants.keys.type] = _constants.objectTypes.USER;
-    babelHelpers.extends(userProxy, info.data);
-
-    return userProxy;
-}
-}, 768, null, "realm/lib/browser/user.js");
-__d(/* realm/lib/browser/session.js */function(global, require, module, exports) {
-
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.createSession = createSession;
-
-var _constants = require(760          ); // 760 = ./constants
-
-var _util = require(762     ); // 762 = ./util
-
-var _rpc = require(763    ); // 763 = ./rpc
-
-var Session = function Session() {
-    babelHelpers.classCallCheck(this, Session);
-};
-
-exports.default = Session;
-
-
-Object.defineProperties(Session.prototype, {
-    url: { get: (0, _util.getterForProperty)('url') },
-    state: { get: (0, _util.getterForProperty)('state') }
-});
-
-(0, _util.createMethods)(Session.prototype, _constants.objectTypes.SESSION, ['_refreshAccessToken', '_simulateError']);
-
-function createSession(realmId, info) {
-    var sessionProxy = Object.create(Session.prototype);
-
-    sessionProxy[_constants.keys.realm] = "(Session object)";
-
-    sessionProxy[_constants.keys.id] = info.id;
-    sessionProxy[_constants.keys.type] = _constants.objectTypes.SESSION;
-    sessionProxy.user = (0, _rpc.deserialize)(realmId, info.data.user);
-    sessionProxy.config = (0, _rpc.deserialize)(realmId, info.data.config);
-
-    return sessionProxy;
-}
-}, 769, null, "realm/lib/browser/session.js");
-__d(/* realm/lib/user-methods.js */function(global, require, module, exports) {
-
-'use strict';
-
-var AuthError = require(771       ).AuthError; // 771 = ./errors
-
-function node_require(module) {
-    return require(module);
-}
-
-function checkTypes(args, types) {
-    args = Array.prototype.slice.call(args);
-    for (var i = 0; i < types.length; ++i) {
-        if (typeof args[i] !== types[i]) {
-            throw new TypeError('param ' + i + ' must be of type ' + types[i]);
-        }
-    }
-}
-
-var performFetch = typeof fetch === 'undefined' ? node_require('node-fetch') : fetch;
-
-var url_parse = require(772        ); // 772 = url-parse
-
-var postHeaders = {
-    'content-type': 'application/json;charset=utf-8',
-    'accept': 'application/json'
-};
-
-function auth_url(server) {
-    if (server.charAt(server.length - 1) != '/') {
-        return server + '/auth';
-    }
-    return server + 'auth';
-}
-
-function scheduleAccessTokenRefresh(user, localRealmPath, realmUrl, expirationDate) {
-    var refreshBuffer = 10 * 1000;
-    var timeout = expirationDate - Date.now() - refreshBuffer;
-    setTimeout(function () {
-        return refreshAccessToken(user, localRealmPath, realmUrl);
-    }, timeout);
-}
-
-function refreshAccessToken(user, localRealmPath, realmUrl) {
-    var parsedRealmUrl = url_parse(realmUrl);
-    var url = auth_url(user.server);
-    var options = {
-        method: 'POST',
-        body: JSON.stringify({
-            data: user.token,
-            path: parsedRealmUrl.pathname,
-            provider: 'realm',
-            app_id: ''
-        }),
-        headers: postHeaders
-    };
-    performFetch(url, options).catch(function () {
-        return setTimeout(function () {
-            return refreshAccessToken(user, localRealmPath, realmUrl);
-        }, 10 * 1000);
-    }).then(function (response) {
-        return response.json().then(function (json) {
-            return { response: response, json: json };
-        });
-    }).then(function (responseAndJson) {
-        var response = responseAndJson.response;
-        var json = responseAndJson.json;
-
-        var newUser = user.constructor.all[user.identity];
-        if (newUser) {
-            var session = newUser._sessionForOnDiskPath(localRealmPath);
-            if (session) {
-                var errorHandler = session.config.error;
-                if (response.status != 200) {
-                    var error = new AuthError(json);
-                    if (errorHandler) {
-                        errorHandler(session, error);
-                    } else {
-                        (console.error || console.log).call(console, 'Unhandled session token refresh error: ' + error);
-                    }
-                } else if (session.state !== 'invalid') {
-                    parsedRealmUrl.set('pathname', json.access_token.token_data.path);
-                    session._refreshAccessToken(json.access_token.token, parsedRealmUrl.href);
-
-                    if (errorHandler && errorHandler._notifyOnAccessTokenRefreshed) {
-                        errorHandler(session, errorHandler._notifyOnAccessTokenRefreshed);
-                    }
-
-                    var tokenExpirationDate = new Date(json.access_token.token_data.expires * 1000);
-                    scheduleAccessTokenRefresh(newUser, localRealmPath, realmUrl, tokenExpirationDate);
-                }
-            }
-        }
-    });
-}
-
-function _authenticate(userConstructor, server, json, callback) {
-    json.app_id = '';
-    var url = auth_url(server);
-    var options = {
-        method: 'POST',
-        body: JSON.stringify(json),
-        headers: postHeaders,
-        open_timeout: 5000
-    };
-    performFetch(url, options).then(function (response) {
-        if (response.status !== 200) {
-            return response.json().then(function (body) {
-                return callback(new AuthError(body));
-            });
-        } else {
-            return response.json().then(function (body) {
-                var token = body.refresh_token.token;
-                var identity = body.refresh_token.token_data.identity;
-                callback(undefined, userConstructor.createUser(server, identity, token, false));
-            });
-        }
-    }).catch(callback);
-}
-
-module.exports = {
-    static: {
-        get current() {
-            var allUsers = this.all;
-            var keys = Object.keys(allUsers);
-            if (keys.length === 0) {
-                return undefined;
-            } else if (keys.length > 1) {
-                throw new Error("Multiple users are logged in");
-            }
-
-            return allUsers[keys[0]];
-        },
-
-        adminUser: function adminUser(token) {
-            checkTypes(arguments, ['string']);
-            var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-                var r = Math.random() * 16 | 0,
-                    v = c == 'x' ? r : r & 0x3 | 0x8;
-                return v.toString(16);
-            });
-            var user = this.createUser('', uuid, token, true);
-            return user;
-        },
-        register: function register(server, username, password, callback) {
-            checkTypes(arguments, ['string', 'string', 'string', 'function']);
-            _authenticate(this, server, {
-                provider: 'password',
-                user_info: { password: password, register: true },
-                data: username
-            }, callback);
-        },
-        login: function login(server, username, password, callback) {
-            checkTypes(arguments, ['string', 'string', 'string', 'function']);
-            _authenticate(this, server, {
-                provider: 'password',
-                user_info: { password: password },
-                data: username
-            }, callback);
-        },
-        registerWithProvider: function registerWithProvider(server, options, callback) {
-            if (arguments.length === 4) {
-                checkTypes(arguments, ['string', 'string', 'string', 'function']);
-                options = {
-                    provider: arguments[1],
-                    providerToken: arguments[2]
-                };
-                callback = arguments[3];
-            } else {
-                checkTypes(arguments, ['string', 'object', 'function']);
-            }
-
-            var reqOptions = {
-                provider: options.provider,
-                data: options.providerToken
-            };
-
-            if (options.userInfo) {
-                reqOptions.user_info = options.userInfo;
-            }
-
-            _authenticate(this, server, reqOptions, callback);
-        },
-
-
-        _refreshAccessToken: refreshAccessToken
-    },
-    instance: {
-        openManagementRealm: function openManagementRealm() {
-            var url = url_parse(this.server);
-            if (url.protocol === 'http:') {
-                url.set('protocol', 'realm:');
-            } else if (url.protocol === 'https:') {
-                url.set('protocol', 'realms:');
-            } else {
-                throw new Error('Unexpected user auth url: ' + this.server);
-            }
-
-            url.set('pathname', '/~/__management');
-
-            return new this.constructor._realmConstructor({
-                schema: require(775                  ), // 775 = ./management-schema
-                sync: {
-                    user: this,
-                    url: url.href
-                }
-            });
-        }
-    }
-};
-}, 770, null, "realm/lib/user-methods.js");
-__d(/* realm/lib/errors.js */function(global, require, module, exports) {
-
-'use strict';
-
-function AuthError(problem) {
-    Error.call(this, problem.title);
-    babelHelpers.extends(this, problem);
-}
-
-AuthError.__proto__ = Error;
-AuthError.prototype.__proto__ = Error.prototype;
-
-exports['AuthError'] = AuthError;
-}, 771, null, "realm/lib/errors.js");
-__d(/* url-parse/index.js */function(global, require, module, exports) {'use strict';
-
-var required = require(773            ), // 773 = requires-port
-    qs = require(774             ), // 774 = querystringify
-    protocolre = /^([a-z][a-z0-9.+-]*:)?(\/\/)?([\S\s]*)/i,
-    slashes = /^[A-Za-z][A-Za-z0-9+-.]*:\/\//;
-
-var rules = [['#', 'hash'], ['?', 'query'], ['/', 'pathname'], ['@', 'auth', 1], [NaN, 'host', undefined, 1, 1], [/:(\d+)$/, 'port', undefined, 1], [NaN, 'hostname', undefined, 1, 1]];
-
-var ignore = { hash: 1, query: 1 };
-
-function lolcation(loc) {
-  loc = loc || global.location || {};
-
-  var finaldestination = {},
-      type = typeof loc,
-      key;
-
-  if ('blob:' === loc.protocol) {
-    finaldestination = new URL(unescape(loc.pathname), {});
-  } else if ('string' === type) {
-    finaldestination = new URL(loc, {});
-    for (key in ignore) {
-      delete finaldestination[key];
-    }
-  } else if ('object' === type) {
-    for (key in loc) {
-      if (key in ignore) continue;
-      finaldestination[key] = loc[key];
-    }
-
-    if (finaldestination.slashes === undefined) {
-      finaldestination.slashes = slashes.test(loc.href);
-    }
-  }
-
-  return finaldestination;
-}
-
-function extractProtocol(address) {
-  var match = protocolre.exec(address);
-
-  return {
-    protocol: match[1] ? match[1].toLowerCase() : '',
-    slashes: !!match[2],
-    rest: match[3]
-  };
-}
-
-function resolve(relative, base) {
-  var path = (base || '/').split('/').slice(0, -1).concat(relative.split('/')),
-      i = path.length,
-      last = path[i - 1],
-      unshift = false,
-      up = 0;
-
-  while (i--) {
-    if (path[i] === '.') {
-      path.splice(i, 1);
-    } else if (path[i] === '..') {
-      path.splice(i, 1);
-      up++;
-    } else if (up) {
-      if (i === 0) unshift = true;
-      path.splice(i, 1);
-      up--;
-    }
-  }
-
-  if (unshift) path.unshift('');
-  if (last === '.' || last === '..') path.push('');
-
-  return path.join('/');
-}
-
-function URL(address, location, parser) {
-  if (!(this instanceof URL)) {
-    return new URL(address, location, parser);
-  }
-
-  var relative,
-      extracted,
-      parse,
-      instruction,
-      index,
-      key,
-      instructions = rules.slice(),
-      type = typeof location,
-      url = this,
-      i = 0;
-
-  if ('object' !== type && 'string' !== type) {
-    parser = location;
-    location = null;
-  }
-
-  if (parser && 'function' !== typeof parser) parser = qs.parse;
-
-  location = lolcation(location);
-
-  extracted = extractProtocol(address || '');
-  relative = !extracted.protocol && !extracted.slashes;
-  url.slashes = extracted.slashes || relative && location.slashes;
-  url.protocol = extracted.protocol || location.protocol || '';
-  address = extracted.rest;
-
-  if (!extracted.slashes) instructions[2] = [/(.*)/, 'pathname'];
-
-  for (; i < instructions.length; i++) {
-    instruction = instructions[i];
-    parse = instruction[0];
-    key = instruction[1];
-
-    if (parse !== parse) {
-      url[key] = address;
-    } else if ('string' === typeof parse) {
-      if (~(index = address.indexOf(parse))) {
-        if ('number' === typeof instruction[2]) {
-          url[key] = address.slice(0, index);
-          address = address.slice(index + instruction[2]);
-        } else {
-          url[key] = address.slice(index);
-          address = address.slice(0, index);
-        }
-      }
-    } else if (index = parse.exec(address)) {
-      url[key] = index[1];
-      address = address.slice(0, index.index);
-    }
-
-    url[key] = url[key] || (relative && instruction[3] ? location[key] || '' : '');
-
-    if (instruction[4]) url[key] = url[key].toLowerCase();
-  }
-
-  if (parser) url.query = parser(url.query);
-
-  if (relative && location.slashes && url.pathname.charAt(0) !== '/' && (url.pathname !== '' || location.pathname !== '')) {
-    url.pathname = resolve(url.pathname, location.pathname);
-  }
-
-  if (!required(url.port, url.protocol)) {
-    url.host = url.hostname;
-    url.port = '';
-  }
-
-  url.username = url.password = '';
-  if (url.auth) {
-    instruction = url.auth.split(':');
-    url.username = instruction[0] || '';
-    url.password = instruction[1] || '';
-  }
-
-  url.origin = url.protocol && url.host && url.protocol !== 'file:' ? url.protocol + '//' + url.host : 'null';
-
-  url.href = url.toString();
-}
-
-function set(part, value, fn) {
-  var url = this;
-
-  switch (part) {
-    case 'query':
-      if ('string' === typeof value && value.length) {
-        value = (fn || qs.parse)(value);
-      }
-
-      url[part] = value;
-      break;
-
-    case 'port':
-      url[part] = value;
-
-      if (!required(value, url.protocol)) {
-        url.host = url.hostname;
-        url[part] = '';
-      } else if (value) {
-        url.host = url.hostname + ':' + value;
-      }
-
-      break;
-
-    case 'hostname':
-      url[part] = value;
-
-      if (url.port) value += ':' + url.port;
-      url.host = value;
-      break;
-
-    case 'host':
-      url[part] = value;
-
-      if (/:\d+$/.test(value)) {
-        value = value.split(':');
-        url.port = value.pop();
-        url.hostname = value.join(':');
-      } else {
-        url.hostname = value;
-        url.port = '';
-      }
-
-      break;
-
-    case 'protocol':
-      url.protocol = value.toLowerCase();
-      url.slashes = !fn;
-      break;
-
-    case 'pathname':
-      url.pathname = value.length && value.charAt(0) !== '/' ? '/' + value : value;
-
-      break;
-
-    default:
-      url[part] = value;
-  }
-
-  for (var i = 0; i < rules.length; i++) {
-    var ins = rules[i];
-
-    if (ins[4]) url[ins[1]] = url[ins[1]].toLowerCase();
-  }
-
-  url.origin = url.protocol && url.host && url.protocol !== 'file:' ? url.protocol + '//' + url.host : 'null';
-
-  url.href = url.toString();
-
-  return url;
-}
-
-function toString(stringify) {
-  if (!stringify || 'function' !== typeof stringify) stringify = qs.stringify;
-
-  var query,
-      url = this,
-      protocol = url.protocol;
-
-  if (protocol && protocol.charAt(protocol.length - 1) !== ':') protocol += ':';
-
-  var result = protocol + (url.slashes ? '//' : '');
-
-  if (url.username) {
-    result += url.username;
-    if (url.password) result += ':' + url.password;
-    result += '@';
-  }
-
-  result += url.host + url.pathname;
-
-  query = 'object' === typeof url.query ? stringify(url.query) : url.query;
-  if (query) result += '?' !== query.charAt(0) ? '?' + query : query;
-
-  if (url.hash) result += url.hash;
-
-  return result;
-}
-
-URL.prototype = { set: set, toString: toString };
-
-URL.extractProtocol = extractProtocol;
-URL.location = lolcation;
-URL.qs = qs;
-
-module.exports = URL;
-}, 772, null, "url-parse/index.js");
-__d(/* requires-port/index.js */function(global, require, module, exports) {'use strict';
-
-module.exports = function required(port, protocol) {
-  protocol = protocol.split(':')[0];
-  port = +port;
-
-  if (!port) return false;
-
-  switch (protocol) {
-    case 'http':
-    case 'ws':
-      return port !== 80;
-
-    case 'https':
-    case 'wss':
-      return port !== 443;
-
-    case 'ftp':
-      return port !== 21;
-
-    case 'gopher':
-      return port !== 70;
-
-    case 'file':
-      return false;
-  }
-
-  return port !== 0;
-};
-}, 773, null, "requires-port/index.js");
-__d(/* querystringify/index.js */function(global, require, module, exports) {'use strict';
-
-var has = Object.prototype.hasOwnProperty;
-
-function decode(input) {
-  return decodeURIComponent(input.replace(/\+/g, ' '));
-}
-
-function querystring(query) {
-  var parser = /([^=?&]+)=?([^&]*)/g,
-      result = {},
-      part;
-
-  for (; part = parser.exec(query); result[decode(part[1])] = decode(part[2])) {}
-
-  return result;
-}
-
-function querystringify(obj, prefix) {
-  prefix = prefix || '';
-
-  var pairs = [];
-
-  if ('string' !== typeof prefix) prefix = '?';
-
-  for (var key in obj) {
-    if (has.call(obj, key)) {
-      pairs.push(encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]));
-    }
-  }
-
-  return pairs.length ? prefix + pairs.join('&') : '';
-}
-
-exports.stringify = querystringify;
-exports.parse = querystring;
-}, 774, null, "querystringify/index.js");
-__d(/* realm/lib/management-schema.js */function(global, require, module, exports) {
-
-'use strict';
-
-module.exports = [{
-    name: 'PermissionChange',
-    properties: {
-        id: { type: 'string' },
-        createdAt: { type: 'date' },
-        updatedAt: { type: 'date' },
-        statusCode: { type: 'int', optional: true },
-        statusMessage: { type: 'string', optional: true },
-        userId: { type: 'string' },
-        realmUrl: { type: 'string' },
-        mayRead: { type: 'bool', optional: true },
-        mayWrite: { type: 'bool', optional: true },
-        mayManage: { type: 'bool', optional: true }
-    },
-    primaryKey: 'id'
-}, {
-    name: 'PermissionOffer',
-    properties: {
-        id: { type: 'string' },
-        createdAt: { type: 'date' },
-        updatedAt: { type: 'date' },
-        statusCode: { type: 'int', optional: true },
-        statusMessage: { type: 'string', optional: true },
-        token: { type: 'string', optional: true, indexed: true },
-        realmUrl: { type: 'string' },
-        mayRead: { type: 'bool', default: false },
-        mayWrite: { type: 'bool', default: false },
-        mayManage: { type: 'bool', default: false },
-        expiresAt: { type: 'date', optional: true }
-    },
-    primaryKey: 'id'
-}, {
-    name: 'PermissionOfferResponse',
-    properties: {
-        id: { type: 'string' },
-        createdAt: { type: 'date' },
-        updatedAt: { type: 'date' },
-        statusCode: { type: 'int', optional: true },
-        statusMessage: { type: 'string', optional: true },
-        token: { type: 'string' },
-        realmUrl: { type: 'string', optional: true }
-    },
-    primaryKey: 'id'
-}];
-}, 775, null, "realm/lib/management-schema.js");
-__d(/* realm/lib/extensions.js */function(global, require, module, exports) {
-
-'use strict';
-
-var getOwnPropertyDescriptors = Object.getOwnPropertyDescriptors || function (obj) {
-    return Object.getOwnPropertyNames(obj).reduce(function (descriptors, name) {
-        descriptors[name] = Object.getOwnPropertyDescriptor(obj, name);
-        return descriptors;
-    }, {});
-};
-
-function setConstructorOnPrototype(klass) {
-    if (klass.prototype.constructor !== klass) {
-        Object.defineProperty(klass.prototype, 'constructor', { value: klass, configurable: true, writable: true });
-    }
-}
-
-module.exports = function (realmConstructor) {
-    Object.defineProperties(realmConstructor.Collection.prototype, require(777                   )); // 777 = ./collection-methods
-
-    setConstructorOnPrototype(realmConstructor.Collection);
-    setConstructorOnPrototype(realmConstructor.List);
-    setConstructorOnPrototype(realmConstructor.Results);
-    setConstructorOnPrototype(realmConstructor.Object);
-
-    if (realmConstructor.Sync) {
-        var userMethods = require(770             ); // 770 = ./user-methods
-        Object.defineProperties(realmConstructor.Sync.User, getOwnPropertyDescriptors(userMethods.static));
-        Object.defineProperties(realmConstructor.Sync.User.prototype, getOwnPropertyDescriptors(userMethods.instance));
-        Object.defineProperty(realmConstructor.Sync.User, '_realmConstructor', { value: realmConstructor });
-
-        realmConstructor.Sync.AuthError = require(771       ).AuthError; // 771 = ./errors
-
-        if (realmConstructor.Sync.cleanup) {
-            process.on('exit', realmConstructor.Sync.cleanup);
-            process.on('SIGINT', function () {
-                realmConstructor.Sync.cleanup();
-                process.exit(2);
-            });
-            process.on('uncaughtException', function (e) {
-                realmConstructor.Sync.cleanup();
-
-                console.log(e.stack);
-                process.exit(99);
-            });
-        }
-
-        setConstructorOnPrototype(realmConstructor.Sync.User);
-        setConstructorOnPrototype(realmConstructor.Sync.Session);
-    } else {
-        Object.defineProperty(realmConstructor, 'Sync', {
-            get: function get() {
-                throw new Error("Realm.Sync is not available. Note that the developer edition of the Node.JS SDK for Realm does not include sync on Linux.");
-            }
-        });
-    }
-
-    var types = Object.freeze({
-        'BOOL': 'bool',
-        'INT': 'int',
-        'FLOAT': 'float',
-        'DOUBLE': 'double',
-        'STRING': 'string',
-        'DATE': 'date',
-        'DATA': 'data',
-        'OBJECT': 'object',
-        'LIST': 'list'
-    });
-    Object.defineProperty(realmConstructor, 'Types', {
-        get: function get() {
-            if (typeof console != 'undefined') {
-                var stack = new Error().stack.split("\n").slice(2).join("\n");
-                var msg = '`Realm.Types` is deprecated! Please specify the type name as lowercase string instead!\n' + stack;
-                if (console.warn != undefined) {
-                    console.warn(msg);
-                } else {
-                    console.log(msg);
-                }
-            }
-            return types;
-        },
-        configurable: true
-    });
-};
-}, 776, null, "realm/lib/extensions.js");
-__d(/* realm/lib/collection-methods.js */function(global, require, module, exports) {
-
-'use strict';
-
-var arrayPrototype = Array.prototype;
-
-var iteratorPrototype = {};
-
-Object.defineProperty(iteratorPrototype, typeof Symbol === 'function' ? Symbol.iterator : '@@iterator', {
-    value: function () {
-        return this;
-    }
-});
-
-['join', 'slice', 'forEach', 'every', 'some', 'find', 'findIndex', 'map', 'reduce', 'reduceRight'].forEach(function (methodName) {
-    var method = arrayPrototype[methodName];
-    if (method) {
-        exports[methodName] = { value: method, configurable: true, writable: true };
-    }
-});
-
-['entries', 'keys', 'values'].forEach(function (methodName) {
-    var method = function method() {
-        var self = this;
-        var index = 0;
-
-        return Object.create(iteratorPrototype, {
-            next: {
-                value: function value() {
-                    if (!self || index >= self.length) {
-                        self = null;
-                        return { done: true, value: undefined };
-                    }
-
-                    var value;
-                    switch (methodName) {
-                        case 'entries':
-                            value = [index, self[index]];
-                            break;
-                        case 'keys':
-                            value = index;
-                            break;
-                        default:
-                            value = self[index];
-                    }
-
-                    index++;
-                    return { done: false, value: value };
-                }
-            }
-        });
-    };
-
-    exports[methodName] = { value: method, configurable: true, writable: true };
-});
-
-exports[typeof Symbol === 'function' ? Symbol.iterator : '@@iterator'] = exports.values;
-}, 777, null, "realm/lib/collection-methods.js");
-__d(/* whatTodo/src/DataStruc.js */function(global, require, module, exports) {Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var DataStruc = function DataStruc(title, completed) {
-  babelHelpers.classCallCheck(this, DataStruc);
-
-  this.guid = function () {
-    var savetime = new Date();
-    var v = savetime.getFullYear() + (savetime.getMonth() + 1) + savetime.getDate() + savetime.getHours() + savetime.getMinutes() + savetime.getSeconds() + savetime.getMilliseconds();
-    return v.toString();
-  };
-
-  this.id = this.guid();
-  this.title = title;
-  this.completed = completed || false;
-  this.createdAt = new Date();
-  this.updatedAt = new Date();
-};
-
-exports.default = DataStruc;
-}, 778, null, "whatTodo/src/DataStruc.js");
+}, 778, null, "moment/moment.js");
 ;require(139);
 ;require(0);
 //# sourceMappingURL=/index.android.map?platform=android
